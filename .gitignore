@@ -38,6 +38,7 @@ bower_components
 build/Release
 
 # Dependency directories
+node_modules
 node_modules/
 jspm_packages/
 
@@ -125,6 +126,9 @@ dist
 # Stores VSCode versions used for testing VSCode extensions
 .vscode-test
 
+# ai
+.claude
+
 # yarn v3
 .pnp.*
 .yarn/*
@@ -137,3 +141,9 @@ dist
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# others
+.idea
+.turbo
+examples/weather-server/.turbo
+packages/core/.turbo
