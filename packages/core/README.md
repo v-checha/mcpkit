@@ -197,9 +197,9 @@ Required TypeScript settings in `tsconfig.json`:
 
 ## Links
 
-- [GitHub Repository](https://github.com/mcpkit/mcpkit)
-- [Full Documentation](https://github.com/mcpkit/mcpkit#readme)
-- [Examples](https://github.com/mcpkit/mcpkit/tree/main/examples)
+- [GitHub Repository](https://github.com/v-checha/mcpkit)
+- [Full Documentation](https://github.com/v-checha/mcpkit#readme)
+- [Examples](https://github.com/v-checha/mcpkit/main/examples)
 
 ## License
 

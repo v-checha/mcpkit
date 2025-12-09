@@ -61,12 +61,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/mcpkit/mcpkit.git",
+    "url": "https://github.com/v-checha/mcpkit.git",
     "directory": "packages/core"
   },
-  "homepage": "https://github.com/mcpkit/mcpkit#readme",
+  "homepage": "https://github.com/v-checha/mcpkit#readme",
   "bugs": {
-    "url": "https://github.com/mcpkit/mcpkit/issues"
+    "url": "https://github.com/v-checha/mcpkit/issues"
   },
   "author": ""
 }
