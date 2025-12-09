@@ -254,7 +254,7 @@ function registerResources(
 
     // Register as resource template if it has parameters
     if (uriParams.length > 0) {
-      server.resource(resourceMeta.uri, resourceMeta.name ?? resourceMeta.uri, async (uri: URL) => {
+      server.resource(resourceMeta.name ?? resourceMeta.uri, resourceMeta.uri, async (uri: URL) => {
         // Extract parameters from the actual URI
         const extractedParams = matchUriTemplate(resourceMeta.uri, uri.href);
         if (!extractedParams) {
@@ -283,7 +283,7 @@ function registerResources(
       });
     } else {
       // Static resource
-      server.resource(resourceMeta.uri, resourceMeta.name ?? resourceMeta.uri, async (uri: URL) => {
+      server.resource(resourceMeta.name ?? resourceMeta.uri, resourceMeta.uri, async (uri: URL) => {
         const result = await method.call(instance);
 
         // If result is already in the right format, return it
