@@ -143,11 +143,11 @@ echo ""
 echo -e "${YELLOW}[6/7] Creating git commit and tag...${NC}"
 if [ "$SKIP_GIT" = false ] && [ "$DRY_RUN" = false ]; then
   git add packages/core/package.json
-  git commit -m "chore(release): @mcpkit/core@$NEW_VERSION"
-  git tag -a "@mcpkit/core@$NEW_VERSION" -m "Release @mcpkit/core@$NEW_VERSION"
-  echo -e "${GREEN}✓ Created commit and tag: @mcpkit/core@$NEW_VERSION${NC}"
+  git commit -m "chore(release): @mcpkit-dev/core@$NEW_VERSION"
+  git tag -a "@mcpkit-dev/core@$NEW_VERSION" -m "Release @mcpkit-dev/core@$NEW_VERSION"
+  echo -e "${GREEN}✓ Created commit and tag: @mcpkit-dev/core@$NEW_VERSION${NC}"
 elif [ "$DRY_RUN" = true ]; then
-  echo -e "${YELLOW}⚠ Dry run - would create tag: @mcpkit/core@$NEW_VERSION${NC}"
+  echo -e "${YELLOW}⚠ Dry run - would create tag: @mcpkit-dev/core@$NEW_VERSION${NC}"
 else
   echo -e "${YELLOW}⚠ Skipping git commit and tag${NC}"
 fi
@@ -156,11 +156,11 @@ fi
 echo ""
 echo -e "${YELLOW}[7/7] Publishing to npm...${NC}"
 if [ "$DRY_RUN" = true ]; then
-  echo -e "${YELLOW}⚠ Dry run - would publish @mcpkit/core@$NEW_VERSION${NC}"
-  npm publish -w @mcpkit/core --access public --dry-run
+  echo -e "${YELLOW}⚠ Dry run - would publish @mcpkit-dev/core@$NEW_VERSION${NC}"
+  npm publish -w @mcpkit-dev/core --access public --dry-run
 else
-  npm publish -w @mcpkit/core --access public
-  echo -e "${GREEN}✓ Published @mcpkit/core@$NEW_VERSION to npm${NC}"
+  npm publish -w @mcpkit-dev/core --access public
+  echo -e "${GREEN}✓ Published @mcpkit-dev/core@$NEW_VERSION to npm${NC}"
 fi
 
 # Done
@@ -172,7 +172,7 @@ if [ "$DRY_RUN" = true ]; then
 else
   echo -e "${GREEN}  Release completed successfully!${NC}"
   echo ""
-  echo -e "${GREEN}  Published: @mcpkit/core@$NEW_VERSION${NC}"
+  echo -e "${GREEN}  Published: @mcpkit-dev/core@$NEW_VERSION${NC}"
   echo ""
   if [ "$SKIP_GIT" = false ]; then
     echo -e "${YELLOW}  Don't forget to push:${NC}"

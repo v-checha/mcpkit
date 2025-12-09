@@ -15,7 +15,7 @@
  * }
  */
 import 'reflect-metadata';
-import { MCPServer, Param, Prompt, Resource, Tool } from '@mcpkit/core';
+import { MCPServer, Param, Prompt, Resource, Tool } from '@mcpkit-dev/core';
 import { z } from 'zod';
 
 // Type definitions for weather data

@@ -1,8 +1,8 @@
-# @mcpkit/core
+# @mcpkit-dev/core
 
 Developer-friendly toolkit for building Model Context Protocol (MCP) servers with decorators.
 
-[![npm version](https://img.shields.io/npm/v/@mcpkit/core.svg)](https://www.npmjs.com/package/@mcpkit/core)
+[![npm version](https://img.shields.io/npm/v/@mcpkit-dev/core.svg)](https://www.npmjs.com/package/@mcpkit-dev/core)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## Features
@@ -16,14 +16,14 @@ Developer-friendly toolkit for building Model Context Protocol (MCP) servers wit
 ## Installation
 
 ```bash
-npm install @mcpkit/core @modelcontextprotocol/sdk zod reflect-metadata
+npm install @mcpkit-dev/core @modelcontextprotocol/sdk zod reflect-metadata
 ```
 
 ## Quick Start
 
 ```typescript
 import 'reflect-metadata';
-import { MCPServer, Tool, Param } from '@mcpkit/core';
+import { MCPServer, Tool, Param } from '@mcpkit-dev/core';
 
 @MCPServer({
   name: 'my-server',

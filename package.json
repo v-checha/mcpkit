@@ -25,7 +25,7 @@
     "release:minor": "./scripts/release.sh minor",
     "release:major": "./scripts/release.sh major",
     "release:dry": "./scripts/release.sh patch --dry-run",
-    "publish:core": "npm publish -w @mcpkit/core --access public"
+    "publish:core": "npm publish -w @mcpkit-dev/core --access public"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.3.8",

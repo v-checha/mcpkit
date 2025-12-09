@@ -15,14 +15,14 @@ MCPKit provides a decorator-based, type-safe API for creating MCP servers that w
 ## Installation
 
 ```bash
-npm install @mcpkit/core @modelcontextprotocol/sdk zod
+npm install @mcpkit-dev/core @modelcontextprotocol/sdk zod
 ```
 
 ## Quick Start
 
 ```typescript
 import 'reflect-metadata';
-import { MCPServer, Tool, Param } from '@mcpkit/core';
+import { MCPServer, Tool, Param } from '@mcpkit-dev/core';
 import { z } from 'zod';
 
 @MCPServer({

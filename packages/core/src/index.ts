@@ -4,7 +4,7 @@
  * @example
  * ```typescript
  * import 'reflect-metadata';
- * import { MCPServer, Tool, Param } from '@mcpkit/core';
+ * import { MCPServer, Tool, Param } from '@mcpkit-dev/core';
  *
  * @MCPServer({
  *   name: 'my-server',
