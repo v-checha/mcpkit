@@ -76,20 +76,12 @@ await server.listen();
 Class decorator that marks a class as an MCP server.
 
 ```typescript
-
 @MCPServer({
     name: 'weather-server',
     version: '1.0.0',
     description: 'Get weather information',
-    capabilities: {
-        tools: true,     // Enable tools (default: true)
-        resources: true, // Enable resources (default: true)
-        prompts: true,   // Enable prompts (default: true)
-    },
 })
-class WeatherServer {
-...
-}
+class WeatherServer {}
 ```
 
 ### @Tool
@@ -98,36 +90,24 @@ Method decorator that exposes a method as an MCP tool.
 
 ```typescript
 // Using @Param decorators
-@Tool({description: 'Get current weather'})
-async
-getWeather(
-    @Param({description: 'City name'})
-city: string,
-@Param({description: 'Temperature unit', optional: true})
-unit ? : 'celsius' | 'fahrenheit'
-):
-Promise < WeatherData > {
-    // implementation
+@Tool({ description: 'Get current weather' })
+async getWeather(
+  @Param({ name: 'city', description: 'City name' }) city: string,
+  @Param({ name: 'unit', optional: true }) unit?: 'celsius' | 'fahrenheit',
+): Promise<WeatherData> {
+  // implementation
 }
 
 // Using explicit Zod schema
 @Tool({
-    description: 'Get forecast',
-    schema: z.object({
-        city: z.string(),
-        days: z.number().min(1).max(7),
-    }),
+  description: 'Get forecast',
+  schema: z.object({
+    city: z.string(),
+    days: z.number().min(1).max(7),
+  }),
 })
-async
-getForecast(args
-:
-{
-    city: string;
-    days: number
-}
-)
-{
-    // implementation
+async getForecast(args: { city: string; days: number }) {
+  // implementation
 }
 ```
 
@@ -150,30 +130,25 @@ Method decorator that exposes data as an MCP resource.
 
 ```typescript
 // URI template with parameters
-@Resource({
-    uri: 'weather://cities/{city}/current',
-    name: 'City Weather',
-    description: 'Current weather for a city',
-})
-async
-getCityWeather(city
-:
-string
-)
-{
-    return JSON.stringify({temperature: 22, city});
+@Resource('weather://cities/{city}/current')
+async getCityWeather(city: string) {
+    return {
+        contents: [{
+            uri: `weather://cities/${city}/current`,
+            mimeType: 'application/json',
+            text: JSON.stringify({ temperature: 22 }),
+        }],
+    };
 }
 
-// Static resource
+// Static resource with options
 @Resource({
     uri: 'docs://readme',
     name: 'README',
     mimeType: 'text/markdown',
 })
-async
-getReadme()
-{
-    return '# My Server\n\nDocumentation here...';
+async getReadme() {
+    return { contents: [{ uri: 'docs://readme', text: '# README' }] };
 }
 ```
 
@@ -182,23 +157,14 @@ getReadme()
 Method decorator for reusable prompt templates.
 
 ```typescript
-@Prompt({
-    name: 'weather-report',
-    description: 'Generate a weather report'
-})
-async
-weatherReport(
-    @Param({description: 'City name'})
-city: string
-)
-{
+@Prompt({ description: 'Generate a weather report' })
+async weatherReport(
+    @Param({ name: 'city' }) city: string,
+) {
     return {
         messages: [{
             role: 'user',
-            content: {
-                type: 'text',
-                text: `Write a detailed weather report for ${city}`,
-            },
+            content: { type: 'text', text: `Write a weather report for ${city}` },
         }],
     };
 }
@@ -209,7 +175,7 @@ city: string
 Method decorator for per-method monitoring and logging.
 
 ```typescript
-@Tool({description: 'Process important data'})
+@Tool({ description: 'Process important data' })
 @Monitor({
     logArgs: true,      // Log input arguments
     logResult: true,    // Log return value
@@ -217,11 +183,7 @@ Method decorator for per-method monitoring and logging.
     logErrors: true,    // Log errors (default: true)
     logger: customLogger, // Optional custom logger
 })
-async
-processData(@Param({name: 'data'})
-data: string
-)
-{
+async processData(@Param({ name: 'data' }) data: string) {
     return `Processed: ${data}`;
 }
 ```
@@ -233,7 +195,7 @@ data: string
 Add logging, monitoring, and observability to your server with hooks:
 
 ```typescript
-import {MCPServer, Tool, Param, type ServerHooks} from '@mcpkit-dev/core';
+import { MCPServer, Tool, Param, type ServerHooks } from '@mcpkit-dev/core';
 
 @MCPServer({
     name: 'monitored-server',
@@ -248,30 +210,30 @@ import {MCPServer, Tool, Param, type ServerHooks} from '@mcpkit-dev/core';
         onServerStop: () => console.error('Server stopped'),
 
         // Tool hooks
-        onToolCall: ({toolName, args}) => {
+        onToolCall: ({ toolName, args }) => {
             console.error(`Tool ${toolName} called with`, args);
         },
-        onToolSuccess: ({toolName, duration, result}) => {
+        onToolSuccess: ({ toolName, duration, result }) => {
             console.error(`Tool ${toolName} completed in ${duration}ms`);
         },
-        onToolError: ({toolName, error, duration}) => {
+        onToolError: ({ toolName, error, duration }) => {
             console.error(`Tool ${toolName} failed after ${duration}ms:`, error.message);
         },
 
         // Resource hooks
-        onResourceRead: ({uri}) => console.error(`Reading resource: ${uri}`),
-        onResourceSuccess: ({uri, duration}) => console.error(`Resource read in ${duration}ms`),
-        onResourceError: ({uri, error}) => console.error(`Resource error: ${uri}`, error),
+        onResourceRead: ({ uri }) => console.error(`Reading resource: ${uri}`),
+        onResourceSuccess: ({ uri, duration }) => console.error(`Resource read in ${duration}ms`),
+        onResourceError: ({ uri, error }) => console.error(`Resource error: ${uri}`, error),
 
         // Prompt hooks
-        onPromptGet: ({promptName}) => console.error(`Getting prompt: ${promptName}`),
-        onPromptSuccess: ({promptName, duration}) => console.error(`Prompt ready in ${duration}ms`),
-        onPromptError: ({promptName, error}) => console.error(`Prompt error:`, error),
+        onPromptGet: ({ promptName }) => console.error(`Getting prompt: ${promptName}`),
+        onPromptSuccess: ({ promptName, duration }) => console.error(`Prompt ready in ${duration}ms`),
+        onPromptError: ({ promptName, error }) => console.error(`Prompt error:`, error),
     },
 })
 class MonitoredServer {
-    @Tool({description: 'Example tool'})
-    async example(@Param({name: 'input'}) input: string) {
+    @Tool({ description: 'Example tool' })
+    async example(@Param({ name: 'input' }) input: string) {
         return `Result: ${input}`;
     }
 }
