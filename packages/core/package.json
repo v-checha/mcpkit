@@ -1,6 +1,6 @@
 {
   "name": "@mcpkit-dev/core",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "Developer-friendly toolkit for building MCP servers with decorators",
   "type": "module",
   "exports": {
