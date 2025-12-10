@@ -59,7 +59,7 @@ function applyMonitorLogging(
 ): void {
   if (!monitorOpts) return;
 
-  const logger = monitorOpts.logger ?? console.log.bind(console);
+  const logger = monitorOpts.logger ?? console.error.bind(console);
   const errorLogger = monitorOpts.errorLogger ?? console.error.bind(console);
 
   if (type === 'call' && monitorOpts.logArgs) {

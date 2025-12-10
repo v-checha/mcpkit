@@ -191,7 +191,7 @@ export interface MonitorOptions {
 
   /**
    * Custom logger function
-   * @default console.log/console.error
+   * @default console.error (use stderr to avoid breaking stdio transport)
    */
   logger?: MonitorLogger;
 

@@ -5,7 +5,8 @@
 
 Developer-friendly toolkit for building Model Context Protocol (MCP) servers with minimal boilerplate.
 
-MCPKit provides a decorator-based, type-safe API for creating MCP servers that work with Claude, ChatGPT, Cursor, and other AI assistants.
+MCPKit provides a decorator-based, type-safe API for creating MCP servers that work with Claude, ChatGPT, Cursor, and
+other AI assistants.
 
 ## Features
 
@@ -19,11 +20,11 @@ MCPKit provides a decorator-based, type-safe API for creating MCP servers that w
 
 ## Packages
 
-| Package | Description |
-|---------|-------------|
-| [@mcpkit-dev/core](./packages/core) | Core decorators and server framework |
-| [@mcpkit-dev/cli](./packages/cli) | CLI tool for project scaffolding |
-| [@mcpkit-dev/testing](./packages/testing) | Testing utilities and mock clients |
+| Package                                   | Description                          |
+|-------------------------------------------|--------------------------------------|
+| [@mcpkit-dev/core](./packages/core)       | Core decorators and server framework |
+| [@mcpkit-dev/cli](./packages/cli)         | CLI tool for project scaffolding     |
+| [@mcpkit-dev/testing](./packages/testing) | Testing utilities and mock clients   |
 
 ## Quick Start
 
@@ -48,19 +49,19 @@ npm install @mcpkit-dev/core zod
 ```
 
 ```typescript
-import { MCPServer, Tool, Param } from '@mcpkit-dev/core';
+import {MCPServer, Tool, Param} from '@mcpkit-dev/core';
 
 @MCPServer({
-  name: 'my-server',
-  version: '1.0.0',
+    name: 'my-server',
+    version: '1.0.0',
 })
 class MyServer {
-  @Tool({ description: 'Greet someone by name' })
-  async greet(
-    @Param({ description: 'Name to greet' }) name: string
-  ): Promise<string> {
-    return `Hello, ${name}!`;
-  }
+    @Tool({description: 'Greet someone by name'})
+    async greet(
+        @Param({description: 'Name to greet'}) name: string
+    ): Promise<string> {
+        return `Hello, ${name}!`;
+    }
 }
 
 // Start the server
@@ -75,17 +76,20 @@ await server.listen();
 Class decorator that marks a class as an MCP server.
 
 ```typescript
+
 @MCPServer({
-  name: 'weather-server',
-  version: '1.0.0',
-  description: 'Get weather information',
-  capabilities: {
-    tools: true,     // Enable tools (default: true)
-    resources: true, // Enable resources (default: true)
-    prompts: true,   // Enable prompts (default: true)
-  },
+    name: 'weather-server',
+    version: '1.0.0',
+    description: 'Get weather information',
+    capabilities: {
+        tools: true,     // Enable tools (default: true)
+        resources: true, // Enable resources (default: true)
+        prompts: true,   // Enable prompts (default: true)
+    },
 })
-class WeatherServer { ... }
+class WeatherServer {
+...
+}
 ```
 
 ### @Tool
@@ -94,24 +98,36 @@ Method decorator that exposes a method as an MCP tool.
 
 ```typescript
 // Using @Param decorators
-@Tool({ description: 'Get current weather' })
-async getWeather(
-  @Param({ description: 'City name' }) city: string,
-  @Param({ description: 'Temperature unit', optional: true }) unit?: 'celsius' | 'fahrenheit'
-): Promise<WeatherData> {
-  // implementation
+@Tool({description: 'Get current weather'})
+async
+getWeather(
+    @Param({description: 'City name'})
+city: string,
+@Param({description: 'Temperature unit', optional: true})
+unit ? : 'celsius' | 'fahrenheit'
+):
+Promise < WeatherData > {
+    // implementation
 }
 
 // Using explicit Zod schema
 @Tool({
-  description: 'Get forecast',
-  schema: z.object({
-    city: z.string(),
-    days: z.number().min(1).max(7),
-  }),
+    description: 'Get forecast',
+    schema: z.object({
+        city: z.string(),
+        days: z.number().min(1).max(7),
+    }),
 })
-async getForecast(args: { city: string; days: number }) {
-  // implementation
+async
+getForecast(args
+:
+{
+    city: string;
+    days: number
+}
+)
+{
+    // implementation
 }
 ```
 
@@ -121,10 +137,10 @@ Parameter decorator for tool and prompt arguments.
 
 ```typescript
 @Param({
-  name: 'city',           // Optional - defaults to parameter name
-  description: 'City',    // Optional - shown to AI
-  schema: z.string(),     // Optional - explicit Zod schema
-  optional: true,         // Optional - is parameter optional?
+    name: 'city',           // Optional - defaults to parameter name
+    description: 'City',    // Optional - shown to AI
+    schema: z.string(),     // Optional - explicit Zod schema
+    optional: true,         // Optional - is parameter optional?
 })
 ```
 
@@ -135,22 +151,29 @@ Method decorator that exposes data as an MCP resource.
 ```typescript
 // URI template with parameters
 @Resource({
-  uri: 'weather://cities/{city}/current',
-  name: 'City Weather',
-  description: 'Current weather for a city',
+    uri: 'weather://cities/{city}/current',
+    name: 'City Weather',
+    description: 'Current weather for a city',
 })
-async getCityWeather(city: string) {
-  return JSON.stringify({ temperature: 22, city });
+async
+getCityWeather(city
+:
+string
+)
+{
+    return JSON.stringify({temperature: 22, city});
 }
 
 // Static resource
 @Resource({
-  uri: 'docs://readme',
-  name: 'README',
-  mimeType: 'text/markdown',
+    uri: 'docs://readme',
+    name: 'README',
+    mimeType: 'text/markdown',
 })
-async getReadme() {
-  return '# My Server\n\nDocumentation here...';
+async
+getReadme()
+{
+    return '# My Server\n\nDocumentation here...';
 }
 ```
 
@@ -160,21 +183,97 @@ Method decorator for reusable prompt templates.
 
 ```typescript
 @Prompt({
-  name: 'weather-report',
-  description: 'Generate a weather report'
+    name: 'weather-report',
+    description: 'Generate a weather report'
 })
-async weatherReport(
-  @Param({ description: 'City name' }) city: string
-) {
-  return {
-    messages: [{
-      role: 'user',
-      content: {
-        type: 'text',
-        text: `Write a detailed weather report for ${city}`,
-      },
-    }],
-  };
+async
+weatherReport(
+    @Param({description: 'City name'})
+city: string
+)
+{
+    return {
+        messages: [{
+            role: 'user',
+            content: {
+                type: 'text',
+                text: `Write a detailed weather report for ${city}`,
+            },
+        }],
+    };
+}
+```
+
+### @Monitor
+
+Method decorator for per-method monitoring and logging.
+
+```typescript
+@Tool({description: 'Process important data'})
+@Monitor({
+    logArgs: true,      // Log input arguments
+    logResult: true,    // Log return value
+    logDuration: true,  // Log execution time (default: true)
+    logErrors: true,    // Log errors (default: true)
+    logger: customLogger, // Optional custom logger
+})
+async
+processData(@Param({name: 'data'})
+data: string
+)
+{
+    return `Processed: ${data}`;
+}
+```
+
+> Note: `@Monitor` only works when `hooks` are configured on `@MCPServer`.
+
+## Lifecycle Hooks
+
+Add logging, monitoring, and observability to your server with hooks:
+
+```typescript
+import {MCPServer, Tool, Param, type ServerHooks} from '@mcpkit-dev/core';
+
+@MCPServer({
+    name: 'monitored-server',
+    version: '1.0.0',
+    hooks: {
+        // Whether to await hook execution (default: true)
+        awaitHooks: true,
+
+        // Server lifecycle
+        // Note: Use console.error (stderr) for logging - stdout is reserved for MCP protocol
+        onServerStart: () => console.error('Server started'),
+        onServerStop: () => console.error('Server stopped'),
+
+        // Tool hooks
+        onToolCall: ({toolName, args}) => {
+            console.error(`Tool ${toolName} called with`, args);
+        },
+        onToolSuccess: ({toolName, duration, result}) => {
+            console.error(`Tool ${toolName} completed in ${duration}ms`);
+        },
+        onToolError: ({toolName, error, duration}) => {
+            console.error(`Tool ${toolName} failed after ${duration}ms:`, error.message);
+        },
+
+        // Resource hooks
+        onResourceRead: ({uri}) => console.error(`Reading resource: ${uri}`),
+        onResourceSuccess: ({uri, duration}) => console.error(`Resource read in ${duration}ms`),
+        onResourceError: ({uri, error}) => console.error(`Resource error: ${uri}`, error),
+
+        // Prompt hooks
+        onPromptGet: ({promptName}) => console.error(`Getting prompt: ${promptName}`),
+        onPromptSuccess: ({promptName, duration}) => console.error(`Prompt ready in ${duration}ms`),
+        onPromptError: ({promptName, error}) => console.error(`Prompt error:`, error),
+    },
+})
+class MonitoredServer {
+    @Tool({description: 'Example tool'})
+    async example(@Param({name: 'input'}) input: string) {
+        return `Result: ${input}`;
+    }
 }
 ```
 
@@ -198,10 +297,10 @@ Modern HTTP transport with session support and SSE streaming.
 ```typescript
 const server = new MyServer();
 await server.listen({
-  transport: 'streamable-http',
-  port: 3000,
-  host: 'localhost',
-  path: '/mcp',
+    transport: 'streamable-http',
+    port: 3000,
+    host: 'localhost',
+    path: '/mcp',
 });
 // Server available at http://localhost:3000/mcp
 ```
@@ -213,11 +312,11 @@ Server-Sent Events transport for backward compatibility.
 ```typescript
 const server = new MyServer();
 await server.listen({
-  transport: 'sse',
-  port: 3000,
-  host: 'localhost',
-  ssePath: '/sse',
-  messagePath: '/message',
+    transport: 'sse',
+    port: 3000,
+    host: 'localhost',
+    ssePath: '/sse',
+    messagePath: '/message',
 });
 ```
 
@@ -260,51 +359,54 @@ npm install -D @mcpkit-dev/testing
 ### Mock Client
 
 ```typescript
-import { MockMcpClient } from '@mcpkit-dev/testing';
-import { bootstrapServer, MetadataStorage } from '@mcpkit-dev/core';
+import {MockMcpClient} from '@mcpkit-dev/testing';
+import {bootstrapServer, MetadataStorage} from '@mcpkit-dev/core';
 
 describe('MyServer', () => {
-  it('should greet users', async () => {
-    // Create mock client
-    const { client, serverTransport } = MockMcpClient.create();
+    it('should greet users', async () => {
+        // Create mock client
+        const {client, serverTransport} = MockMcpClient.create();
 
-    // Bootstrap server with test transport
-    const instance = new MyServer();
-    const options = MetadataStorage.getServerOptions(MyServer);
-    const server = await bootstrapServer(instance, options!);
-    await server.server.connect(serverTransport);
-    await client.connect();
+        // Bootstrap server with test transport
+        const instance = new MyServer();
+        const options = MetadataStorage.getServerOptions(MyServer);
+        const server = await bootstrapServer(instance, options!);
+        await server.server.connect(serverTransport);
+        await client.connect();
 
-    // Test the tool
-    const result = await client.callTool('greet', { name: 'World' });
-    expect(result.content[0].text).toBe('Hello, World!');
+        // Test the tool
+        const result = await client.callTool('greet', {name: 'World'});
+        expect(result.content[0].text).toBe('Hello, World!');
 
-    // Cleanup
-    await client.close();
-    await server.close();
-  });
+        // Cleanup
+        await client.close();
+        await server.close();
+    });
 });
 ```
 
 ### In-Memory Transport
 
 ```typescript
-import { InMemoryTransport } from '@mcpkit-dev/testing';
+import {InMemoryTransport} from '@mcpkit-dev/testing';
 
-const { clientTransport, serverTransport } = InMemoryTransport.createPair();
+const {clientTransport, serverTransport} = InMemoryTransport.createPair();
 // Use transports for direct client-server communication
 ```
 
 ## Using with Claude Desktop
 
-Add your server to Claude Desktop's configuration (`~/Library/Application Support/Claude/claude_desktop_config.json` on macOS):
+Add your server to Claude Desktop's configuration (`~/Library/Application Support/Claude/claude_desktop_config.json` on
+macOS):
 
 ```json
 {
   "mcpServers": {
     "my-server": {
       "command": "node",
-      "args": ["/path/to/your/server/dist/index.js"]
+      "args": [
+        "/path/to/your/server/dist/index.js"
+      ]
     }
   }
 }
@@ -338,16 +440,16 @@ See the [examples](./examples) directory for complete working examples:
 
 ```typescript
 interface ListenOptions {
-  transport?: 'stdio' | 'http' | 'sse' | 'streamable-http';
-  port?: number;           // HTTP port (default: 3000)
-  host?: string;           // HTTP host (default: 'localhost')
-  path?: string;           // Streamable HTTP endpoint path
-  ssePath?: string;        // SSE stream path
-  messagePath?: string;    // SSE message path
-  stateless?: boolean;     // Disable session management
-  enableJsonResponse?: boolean; // Use JSON instead of SSE
-  onSessionInitialized?: (sessionId: string) => void;
-  onSessionClosed?: (sessionId: string) => void;
+    transport?: 'stdio' | 'http' | 'sse' | 'streamable-http';
+    port?: number;           // HTTP port (default: 3000)
+    host?: string;           // HTTP host (default: 'localhost')
+    path?: string;           // Streamable HTTP endpoint path
+    ssePath?: string;        // SSE stream path
+    messagePath?: string;    // SSE message path
+    stateless?: boolean;     // Disable session management
+    enableJsonResponse?: boolean; // Use JSON instead of SSE
+    onSessionInitialized?: (sessionId: string) => void;
+    onSessionClosed?: (sessionId: string) => void;
 }
 ```
 
@@ -355,10 +457,10 @@ interface ListenOptions {
 
 ```typescript
 interface BootstrappedServer {
-  server: McpServer;        // Underlying MCP server
-  transport: Transport;     // Active transport
-  connect(): Promise<void>; // Start the server
-  close(): Promise<void>;   // Stop the server
+    server: McpServer;        // Underlying MCP server
+    transport: Transport;     // Active transport
+    connect(): Promise<void>; // Start the server
+    close(): Promise<void>;   // Stop the server
 }
 ```
 

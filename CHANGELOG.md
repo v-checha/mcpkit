@@ -26,6 +26,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `ServerHooks` and `MonitorOptions` types exported from main package
 - CLI templates now include hooks configuration by default
 
+### Fixed
+
+- **@Monitor default logger uses stderr** - Changed default logger from `console.log` to `console.error` to prevent breaking stdio transport (stdout is reserved for MCP JSON-RPC protocol)
+
 ## [1.3.0] - 2025-12-10
 
 ### Added

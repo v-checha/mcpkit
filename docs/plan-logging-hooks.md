@@ -141,18 +141,18 @@ File: `packages/core/src/hooks/hooks.test.ts`
 
 ## File Changes Summary
 
-| File | Action |
-|------|--------|
-| `src/types/hooks.ts` | Create |
-| `src/types/index.ts` | Update exports |
-| `src/decorators/server.ts` | Add hooks option |
-| `src/decorators/monitor.ts` | Create |
-| `src/decorators/index.ts` | Update exports |
-| `src/metadata/storage.ts` | Add monitor metadata |
-| `src/metadata/types.ts` | Add monitor types |
-| `src/server/bootstrap.ts` | Implement hook invocations |
-| `src/index.ts` | Update exports |
-| `src/hooks/hooks.test.ts` | Create tests |
+| File                        | Action                     |
+|-----------------------------|----------------------------|
+| `src/types/hooks.ts`        | Create                     |
+| `src/types/index.ts`        | Update exports             |
+| `src/decorators/server.ts`  | Add hooks option           |
+| `src/decorators/monitor.ts` | Create                     |
+| `src/decorators/index.ts`   | Update exports             |
+| `src/metadata/storage.ts`   | Add monitor metadata       |
+| `src/metadata/types.ts`     | Add monitor types          |
+| `src/server/bootstrap.ts`   | Implement hook invocations |
+| `src/index.ts`              | Update exports             |
+| `src/hooks/hooks.test.ts`   | Create tests               |
 
 ## Usage Examples
 
@@ -175,27 +175,6 @@ File: `packages/core/src/hooks/hooks.test.ts`
   }
 })
 class LoggedServer { ... }
-```
-
-### Metrics Collection
-
-```typescript
-import { metrics } from './metrics';
-
-@MCPServer({
-  name: 'monitored-server',
-  version: '1.0.0',
-  hooks: {
-    onToolSuccess: ({ toolName, duration }) => {
-      metrics.histogram('tool_duration_ms', duration, { tool: toolName });
-      metrics.counter('tool_calls_total', 1, { tool: toolName, status: 'success' });
-    },
-    onToolError: ({ toolName }) => {
-      metrics.counter('tool_calls_total', 1, { tool: toolName, status: 'error' });
-    },
-  }
-})
-class MetricsServer { ... }
 ```
 
 ### Per-Tool Monitoring

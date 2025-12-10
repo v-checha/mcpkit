@@ -45,10 +45,10 @@ export interface MCPServerDecoratorOptions {
    *   version: '1.0.0',
    *   hooks: {
    *     onToolCall: ({ toolName, args }) => {
-   *       console.log(`Tool ${toolName} called`);
+   *       console.error(`Tool ${toolName} called`);
    *     },
    *     onToolSuccess: ({ toolName, duration }) => {
-   *       console.log(`Tool ${toolName} completed in ${duration}ms`);
+   *       console.error(`Tool ${toolName} completed in ${duration}ms`);
    *     },
    *   }
    * })

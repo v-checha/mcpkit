@@ -7,7 +7,8 @@ Developer-friendly toolkit for building Model Context Protocol (MCP) servers wit
 
 ## Features
 
-- **Decorator-based API** - Clean, declarative syntax with `@MCPServer`, `@Tool`, `@Resource`, `@Prompt`, `@Param`, and `@Monitor`
+- **Decorator-based API** - Clean, declarative syntax with `@MCPServer`, `@Tool`, `@Resource`, `@Prompt`, `@Param`, and
+  `@Monitor`
 - **Type-safe** - Full TypeScript support with automatic type inference
 - **Minimal boilerplate** - Focus on your business logic, not protocol details
 - **Zod integration** - Runtime validation with automatic JSON Schema generation
@@ -180,28 +181,29 @@ import { MCPServer, Tool, Param, type ServerHooks } from '@mcpkit-dev/core';
     awaitHooks: true,
 
     // Server lifecycle
-    onServerStart: () => console.log('Server started'),
-    onServerStop: () => console.log('Server stopped'),
+    // Note: Use console.error (stderr) for logging - stdout is reserved for MCP protocol
+    onServerStart: () => console.error('Server started'),
+    onServerStop: () => console.error('Server stopped'),
 
     // Tool hooks
     onToolCall: ({ toolName, args }) => {
-      console.log(`Tool ${toolName} called with`, args);
+      console.error(`Tool ${toolName} called with`, args);
     },
     onToolSuccess: ({ toolName, duration, result }) => {
-      console.log(`Tool ${toolName} completed in ${duration}ms`);
+      console.error(`Tool ${toolName} completed in ${duration}ms`);
     },
     onToolError: ({ toolName, error, duration }) => {
       console.error(`Tool ${toolName} failed after ${duration}ms:`, error.message);
     },
 
     // Resource hooks
-    onResourceRead: ({ uri }) => console.log(`Reading resource: ${uri}`),
-    onResourceSuccess: ({ uri, duration }) => console.log(`Resource read in ${duration}ms`),
+    onResourceRead: ({ uri }) => console.error(`Reading resource: ${uri}`),
+    onResourceSuccess: ({ uri, duration }) => console.error(`Resource read in ${duration}ms`),
     onResourceError: ({ uri, error }) => console.error(`Resource error: ${uri}`, error),
 
     // Prompt hooks
-    onPromptGet: ({ promptName }) => console.log(`Getting prompt: ${promptName}`),
-    onPromptSuccess: ({ promptName, duration }) => console.log(`Prompt ready in ${duration}ms`),
+    onPromptGet: ({ promptName }) => console.error(`Getting prompt: ${promptName}`),
+    onPromptSuccess: ({ promptName, duration }) => console.error(`Prompt ready in ${duration}ms`),
     onPromptError: ({ promptName, error }) => console.error(`Prompt error:`, error),
   },
 })
@@ -211,26 +213,6 @@ class MonitoredServer {
     return `Result: ${input}`;
   }
 }
-```
-
-### Metrics Collection Example
-
-```typescript
-import { MCPServer, type ServerHooks } from '@mcpkit-dev/core';
-
-const hooks: ServerHooks = {
-  awaitHooks: false, // Fire-and-forget for better performance
-  onToolSuccess: ({ toolName, duration }) => {
-    metrics.histogram('mcp_tool_duration_ms', duration, { tool: toolName });
-    metrics.counter('mcp_tool_calls_total', 1, { tool: toolName, status: 'success' });
-  },
-  onToolError: ({ toolName }) => {
-    metrics.counter('mcp_tool_calls_total', 1, { tool: toolName, status: 'error' });
-  },
-};
-
-@MCPServer({ name: 'metrics-server', version: '1.0.0', hooks })
-class MetricsServer { /* ... */ }
 ```
 
 ## Server Lifecycle
@@ -250,7 +232,8 @@ await server.close();
 
 ## Using with Claude Desktop
 
-Add your server to Claude Desktop's configuration (`~/Library/Application Support/Claude/claude_desktop_config.json` on macOS):
+Add your server to Claude Desktop's configuration (`~/Library/Application Support/Claude/claude_desktop_config.json` on
+macOS):
 
 ```json
 {

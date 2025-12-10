@@ -14,7 +14,7 @@ import type { MonitorOptions } from '../types/hooks.js';
  *   name: 'my-server',
  *   version: '1.0.0',
  *   hooks: {
- *     onToolCall: ({ toolName }) => console.log(`Calling ${toolName}`),
+ *     onToolCall: ({ toolName }) => console.error(`Calling ${toolName}`),
  *   }
  * })
  * class MyServer {
