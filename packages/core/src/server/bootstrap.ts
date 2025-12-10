@@ -12,6 +12,7 @@ import {
   type ToolMetadata,
 } from '../metadata/index.js';
 import { buildSchemaFromParams } from '../schema/index.js';
+import { SseTransport, StreamableHttpTransport } from '../transport/index.js';
 import type { ListenOptions } from '../types/index.js';
 
 /**
@@ -371,11 +372,27 @@ function createTransport(options: ListenOptions): Transport {
   switch (transportType) {
     case 'stdio':
       return new StdioServerTransport();
-    case 'http':
+
     case 'streamable-http':
-      throw new BootstrapError(
-        `Transport "${transportType}" is not yet implemented. Use 'stdio' for now.`,
-      );
+      return new StreamableHttpTransport({
+        port: options.port ?? 3000,
+        host: options.host ?? 'localhost',
+        path: options.path ?? '/mcp',
+        stateless: options.stateless,
+        enableJsonResponse: options.enableJsonResponse,
+        onSessionInitialized: options.onSessionInitialized,
+        onSessionClosed: options.onSessionClosed,
+      });
+
+    case 'http':
+    case 'sse':
+      return new SseTransport({
+        port: options.port ?? 3000,
+        host: options.host ?? 'localhost',
+        ssePath: options.ssePath ?? '/sse',
+        messagePath: options.messagePath ?? '/message',
+      });
+
     default:
       throw new BootstrapError(`Unknown transport type: ${transportType}`);
   }

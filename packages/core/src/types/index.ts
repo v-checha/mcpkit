@@ -1,7 +1,7 @@
 /**
  * Supported transport types
  */
-export type TransportType = 'stdio' | 'http' | 'streamable-http';
+export type TransportType = 'stdio' | 'http' | 'sse' | 'streamable-http';
 
 /**
  * Options for starting the MCP server
@@ -15,6 +15,7 @@ export interface ListenOptions {
 
   /**
    * Port number for HTTP transports
+   * @default 3000
    */
   port?: number;
 
@@ -23,6 +24,46 @@ export interface ListenOptions {
    * @default 'localhost'
    */
   host?: string;
+
+  /**
+   * Path for Streamable HTTP endpoint
+   * @default '/mcp'
+   */
+  path?: string;
+
+  /**
+   * Path for SSE stream endpoint (SSE transport only)
+   * @default '/sse'
+   */
+  ssePath?: string;
+
+  /**
+   * Path for message endpoint (SSE transport only)
+   * @default '/message'
+   */
+  messagePath?: string;
+
+  /**
+   * Enable stateless mode for Streamable HTTP (no session management)
+   * @default false
+   */
+  stateless?: boolean;
+
+  /**
+   * Enable JSON responses instead of SSE streams (Streamable HTTP only)
+   * @default false
+   */
+  enableJsonResponse?: boolean;
+
+  /**
+   * Callback when a session is initialized (Streamable HTTP only)
+   */
+  onSessionInitialized?: (sessionId: string) => void;
+
+  /**
+   * Callback when a session is closed (Streamable HTTP only)
+   */
+  onSessionClosed?: (sessionId: string) => void;
 }
 
 /**

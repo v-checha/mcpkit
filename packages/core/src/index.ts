@@ -83,8 +83,14 @@ export {
 } from './server/index.js';
 // Transport (advanced usage)
 export {
+  createSseTransport,
   createStdioTransport,
+  createStreamableHttpTransport,
+  SseTransport,
+  type SseTransportOptions,
   StdioTransport,
+  StreamableHttpTransport,
+  type StreamableHttpTransportOptions,
   type TransportKind,
 } from './transport/index.js';
 // Types
