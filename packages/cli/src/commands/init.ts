@@ -306,7 +306,7 @@ const listenOptions: ListenOptions = {
     config.transport === 'stdio'
       ? ''
       : `
-  console.log('Server running at http://localhost:3000');`;
+  console.error('Server running at http://localhost:3000');`;
 
   return `import 'reflect-metadata';
 import { MCPServer, Tool, Resource, Prompt, Param, type MCPServerInstance } from '@mcpkit-dev/core';${transportImport}

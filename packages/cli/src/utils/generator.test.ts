@@ -197,11 +197,11 @@ describe('generator utilities', () => {
       expect(result).toContain("host: 'localhost'");
     });
 
-    it('should include server URL console.log for HTTP transports', () => {
+    it('should include server URL console.error for HTTP transports', () => {
       const httpConfig = { ...defaultConfig, transport: 'streamable-http' };
       const result = generateServerCode(httpConfig);
 
-      expect(result).toContain("console.log('Server running at http://localhost:3000')");
+      expect(result).toContain("console.error('Server running at http://localhost:3000')");
     });
 
     it('should include project description in comment', () => {
