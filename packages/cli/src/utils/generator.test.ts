@@ -77,6 +77,12 @@ describe('generator utilities', () => {
       expect(result.dependencies).toHaveProperty('@mcpkit-dev/core');
     });
 
+    it('should include reflect-metadata dependency', () => {
+      const result = generatePackageJson(defaultConfig) as { dependencies: Record<string, string> };
+
+      expect(result.dependencies).toHaveProperty('reflect-metadata');
+    });
+
     it('should include required dev dependencies', () => {
       const result = generatePackageJson(defaultConfig) as {
         devDependencies: Record<string, string>;

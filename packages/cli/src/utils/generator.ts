@@ -48,7 +48,8 @@ export function generatePackageJson(config: ProjectConfig): object {
     author: config.author,
     license: 'MIT',
     dependencies: {
-      '@mcpkit-dev/core': '^0.1.0',
+      '@mcpkit-dev/core': '^1.0.0',
+      'reflect-metadata': '^0.2.2',
     },
     devDependencies: {
       '@types/node': '^22.10.2',
@@ -136,7 +137,8 @@ const listenOptions: ListenOptions = {
       : `
   console.log('Server running at http://localhost:3000');`;
 
-  return `import { MCPServer, Tool, Resource, Prompt, Param } from '@mcpkit-dev/core';${transportImport}
+  return `import 'reflect-metadata';
+import { MCPServer, Tool, Resource, Prompt, Param, type MCPServerInstance } from '@mcpkit-dev/core';${transportImport}
 
 /**
  * ${config.description}
@@ -150,7 +152,7 @@ class Server {
    * A simple greeting tool
    */
   @Tool({ description: 'Say hello to someone' })
-  async greet(@Param({ description: 'Name to greet' }) name: string): Promise<string> {
+  async greet(@Param({ name: 'name', description: 'Name to greet' }) name: string): Promise<string> {
     return \`Hello, \${name}! Welcome to ${config.name}.\`;
   }
 
@@ -203,6 +205,9 @@ class Server {
     };
   }
 }
+
+// Declaration merging to add MCPServerInstance methods to Server type
+interface Server extends MCPServerInstance {}
 ${transportOptions}
 
 // Create and start the server
