@@ -136,7 +136,7 @@ const listenOptions: ListenOptions = {
       : `
   console.log('Server running at http://localhost:3000');`;
 
-  return `import { MCPServer, Tool, Resource, Prompt, Param, listen } from '@mcpkit-dev/core';${transportImport}
+  return `import { MCPServer, Tool, Resource, Prompt, Param } from '@mcpkit-dev/core';${transportImport}
 
 /**
  * ${config.description}
@@ -205,8 +205,8 @@ class Server {
 }
 ${transportOptions}
 
-// Bootstrap and start the server
-const server = await listen(Server);
+// Create and start the server
+const server = new Server();
 ${listenCall}${serverUrl}
 `;
 }

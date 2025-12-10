@@ -33,7 +33,9 @@ export interface MockClientResult {
  * const { client, serverTransport } = MockMcpClient.create();
  *
  * // Connect your server to serverTransport
- * const server = await listen(MyServer);
+ * const instance = new MyServer();
+ * const options = MetadataStorage.getServerOptions(MyServer);
+ * const server = await bootstrapServer(instance, options!);
  * await server.server.connect(serverTransport);
  *
  * // Use the client to test your server

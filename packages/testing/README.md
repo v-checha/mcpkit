@@ -19,7 +19,7 @@ npm install -D @mcpkit-dev/testing
 ```typescript
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { MockMcpClient } from '@mcpkit-dev/testing';
-import { listen } from '@mcpkit-dev/core';
+import { bootstrapServer, MetadataStorage } from '@mcpkit-dev/core';
 import { MyServer } from './my-server';
 
 describe('MyServer', () => {
@@ -30,7 +30,9 @@ describe('MyServer', () => {
     const { client: mockClient, serverTransport } = MockMcpClient.create();
     client = mockClient;
 
-    const server = await listen(MyServer);
+    const instance = new MyServer();
+    const options = MetadataStorage.getServerOptions(MyServer);
+    const server = await bootstrapServer(instance, options!);
     await server.server.connect(serverTransport);
     await client.connect();
 

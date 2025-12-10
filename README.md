@@ -48,7 +48,7 @@ npm install @mcpkit-dev/core zod
 ```
 
 ```typescript
-import { MCPServer, Tool, Param, listen } from '@mcpkit-dev/core';
+import { MCPServer, Tool, Param } from '@mcpkit-dev/core';
 
 @MCPServer({
   name: 'my-server',
@@ -64,7 +64,8 @@ class MyServer {
 }
 
 // Start the server
-const server = await listen(MyServer);
+const server = new MyServer();
+await server.listen();
 ```
 
 ## Decorators
@@ -186,10 +187,8 @@ MCPKit supports multiple transport protocols:
 Standard input/output transport for CLI tools and Claude Desktop integration.
 
 ```typescript
-const server = await listen(MyServer);
-// or explicitly:
-const server = await listen(MyServer);
-await server.listen({ transport: 'stdio' });
+const server = new MyServer();
+await server.listen(); // Uses stdio by default
 ```
 
 ### Streamable HTTP (Recommended for Web)
@@ -197,7 +196,7 @@ await server.listen({ transport: 'stdio' });
 Modern HTTP transport with session support and SSE streaming.
 
 ```typescript
-const server = await listen(MyServer);
+const server = new MyServer();
 await server.listen({
   transport: 'streamable-http',
   port: 3000,
@@ -212,7 +211,7 @@ await server.listen({
 Server-Sent Events transport for backward compatibility.
 
 ```typescript
-const server = await listen(MyServer);
+const server = new MyServer();
 await server.listen({
   transport: 'sse',
   port: 3000,
@@ -262,7 +261,7 @@ npm install -D @mcpkit-dev/testing
 
 ```typescript
 import { MockMcpClient } from '@mcpkit-dev/testing';
-import { listen } from '@mcpkit-dev/core';
+import { bootstrapServer, MetadataStorage } from '@mcpkit-dev/core';
 
 describe('MyServer', () => {
   it('should greet users', async () => {
@@ -270,7 +269,9 @@ describe('MyServer', () => {
     const { client, serverTransport } = MockMcpClient.create();
 
     // Bootstrap server with test transport
-    const server = await listen(MyServer);
+    const instance = new MyServer();
+    const options = MetadataStorage.getServerOptions(MyServer);
+    const server = await bootstrapServer(instance, options!);
     await server.server.connect(serverTransport);
     await client.connect();
 

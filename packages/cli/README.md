@@ -156,7 +156,7 @@ class Server {
   }
 }
 
-const server = await listen(Server);
+const server = new Server();
 await server.listen();
 ```
 
