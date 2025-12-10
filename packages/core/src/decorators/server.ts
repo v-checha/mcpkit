@@ -1,6 +1,7 @@
 import 'reflect-metadata';
 import { MetadataStorage, type ServerOptionsMetadata } from '../metadata/index.js';
 import { type BootstrappedServer, bootstrapServer } from '../server/index.js';
+import type { ServerHooks } from '../types/hooks.js';
 import type { ListenOptions, MCPServerInstance } from '../types/index.js';
 
 /**
@@ -33,6 +34,27 @@ export interface MCPServerDecoratorOptions {
     /** Enable prompt registration (default: true) */
     prompts?: boolean;
   };
+
+  /**
+   * Server lifecycle and monitoring hooks
+   *
+   * @example
+   * ```typescript
+   * @MCPServer({
+   *   name: 'my-server',
+   *   version: '1.0.0',
+   *   hooks: {
+   *     onToolCall: ({ toolName, args }) => {
+   *       console.log(`Tool ${toolName} called`);
+   *     },
+   *     onToolSuccess: ({ toolName, duration }) => {
+   *       console.log(`Tool ${toolName} completed in ${duration}ms`);
+   *     },
+   *   }
+   * })
+   * ```
+   */
+  hooks?: ServerHooks;
 }
 
 /**
@@ -71,6 +93,7 @@ export function MCPServer(
       version: options.version,
       description: options.description,
       capabilities: options.capabilities,
+      hooks: options.hooks,
     };
     MetadataStorage.setServerOptions(target, serverOptions);
 
@@ -100,6 +123,14 @@ export function MCPServer(
 
         this.__mcpBootstrapped = await bootstrapServer(this, serverOpts, listenOptions);
         await this.__mcpBootstrapped.connect();
+
+        // Call onServerStart hook
+        if (serverOpts.hooks?.onServerStart) {
+          const promise = serverOpts.hooks.onServerStart();
+          if (serverOpts.hooks.awaitHooks !== false && promise) {
+            await promise;
+          }
+        }
       }
 
       /**
@@ -109,8 +140,17 @@ export function MCPServer(
        */
       async close(): Promise<void> {
         if (this.__mcpBootstrapped) {
+          const serverOpts = MetadataStorage.getServerOptions(target);
           await this.__mcpBootstrapped.close();
           this.__mcpBootstrapped = null;
+
+          // Call onServerStop hook
+          if (serverOpts?.hooks?.onServerStop) {
+            const promise = serverOpts.hooks.onServerStop();
+            if (serverOpts.hooks.awaitHooks !== false && promise) {
+              await promise;
+            }
+          }
         }
       }
 

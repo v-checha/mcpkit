@@ -166,3 +166,19 @@ export interface PromptResult {
   description?: string;
   messages: PromptMessage[];
 }
+
+// Hook types
+export type {
+  MonitorLogger,
+  MonitorOptions,
+  PromptErrorContext,
+  PromptGetContext,
+  PromptSuccessContext,
+  ResourceErrorContext,
+  ResourceReadContext,
+  ResourceSuccessContext,
+  ServerHooks,
+  ToolCallContext,
+  ToolErrorContext,
+  ToolSuccessContext,
+} from './hooks.js';

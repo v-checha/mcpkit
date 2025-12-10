@@ -13,6 +13,8 @@ export const METADATA_KEYS = {
   PROMPTS: Symbol('mcpkit:prompts'),
   /** Parameter metadata prefix (combined with method name) */
   PARAMS: Symbol('mcpkit:params'),
+  /** Monitor options metadata prefix (combined with method name) */
+  MONITOR: Symbol('mcpkit:monitor'),
   /** TypeScript design-time type metadata */
   DESIGN_TYPE: 'design:type',
   /** TypeScript design-time parameter types */

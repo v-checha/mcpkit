@@ -1,3 +1,4 @@
+export { Monitor } from './monitor.js';
 export { Param, type ParamDecoratorOptions } from './param.js';
 export { Prompt, type PromptDecoratorOptions } from './prompt.js';
 export { Resource, type ResourceDecoratorOptions } from './resource.js';

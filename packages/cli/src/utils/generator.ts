@@ -138,7 +138,32 @@ const listenOptions: ListenOptions = {
   console.error('Server running at http://localhost:3000');`;
 
   return `import 'reflect-metadata';
-import { MCPServer, Tool, Resource, Prompt, Param, type MCPServerInstance } from '@mcpkit-dev/core';${transportImport}
+import { MCPServer, Tool, Resource, Prompt, Param, type MCPServerInstance, type ServerHooks } from '@mcpkit-dev/core';${transportImport}
+
+/**
+ * Server lifecycle hooks for logging and monitoring
+ * Customize these to add your own observability
+ */
+const hooks: ServerHooks = {
+  // Set to false for fire-and-forget (better performance)
+  awaitHooks: true,
+
+  onServerStart: () => {
+    console.error('[${config.name}] Server started');
+  },
+  onServerStop: () => {
+    console.error('[${config.name}] Server stopped');
+  },
+  onToolCall: ({ toolName, args }) => {
+    console.error(\`[${config.name}] Tool "\${toolName}" called\`, args);
+  },
+  onToolSuccess: ({ toolName, duration }) => {
+    console.error(\`[${config.name}] Tool "\${toolName}" completed in \${duration}ms\`);
+  },
+  onToolError: ({ toolName, error, duration }) => {
+    console.error(\`[${config.name}] Tool "\${toolName}" failed after \${duration}ms:\`, error.message);
+  },
+};
 
 /**
  * ${config.description}
@@ -146,6 +171,7 @@ import { MCPServer, Tool, Resource, Prompt, Param, type MCPServerInstance } from
 @MCPServer({
   name: '${config.name}',
   version: '0.1.0',
+  hooks,
 })
 class Server {
   /**

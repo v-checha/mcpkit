@@ -1,5 +1,6 @@
 import 'reflect-metadata';
 import type { ZodTypeAny } from 'zod';
+import type { MonitorOptions, ServerHooks } from '../types/hooks.js';
 import { METADATA_KEYS } from './keys.js';
 
 /**
@@ -86,6 +87,18 @@ export interface ServerOptionsMetadata {
     resources?: boolean;
     prompts?: boolean;
   };
+  /** Server lifecycle and monitoring hooks */
+  hooks?: ServerHooks;
+}
+
+/**
+ * Monitor decorator options stored in metadata
+ */
+export interface MonitorMetadata {
+  /** The method property key */
+  propertyKey: string | symbol;
+  /** Monitor options */
+  options: MonitorOptions;
 }
 
 /**
@@ -208,5 +221,35 @@ export class MetadataStorage {
    */
   private static getParamKey(propertyKey: string | symbol): string {
     return `${METADATA_KEYS.PARAMS.toString()}:${String(propertyKey)}`;
+  }
+
+  /**
+   * Generate unique key for monitor metadata
+   */
+  private static getMonitorKey(propertyKey: string | symbol): string {
+    return `${METADATA_KEYS.MONITOR.toString()}:${String(propertyKey)}`;
+  }
+
+  /**
+   * Store monitor options for a specific method
+   */
+  static setMonitorOptions(
+    target: object,
+    propertyKey: string | symbol,
+    options: MonitorOptions,
+  ): void {
+    const key = MetadataStorage.getMonitorKey(propertyKey);
+    Reflect.defineMetadata(key, options, target);
+  }
+
+  /**
+   * Get monitor options for a specific method
+   */
+  static getMonitorOptions(
+    target: object,
+    propertyKey: string | symbol,
+  ): MonitorOptions | undefined {
+    const key = MetadataStorage.getMonitorKey(propertyKey);
+    return Reflect.getMetadata(key, target);
   }
 }

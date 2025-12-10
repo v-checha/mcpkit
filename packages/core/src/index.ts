@@ -27,6 +27,7 @@
 // Re-export reflect-metadata for convenience
 import 'reflect-metadata';
 
+export { Monitor } from './decorators/monitor.js';
 export {
   Param,
   type ParamDecoratorOptions,
@@ -63,6 +64,7 @@ export {
   METADATA_KEYS,
   type MetadataKey,
   MetadataStorage,
+  type MonitorMetadata,
   type ParamMetadata,
   type PromptMetadata,
   type ResourceMetadata,
@@ -98,15 +100,28 @@ export type {
   ImageContent,
   ListenOptions,
   MCPServerInstance,
+  // Hook types
+  MonitorLogger,
+  MonitorOptions,
+  PromptErrorContext,
+  PromptGetContext,
   PromptMessage,
   PromptMessageContent,
   PromptResult,
   PromptRole,
+  PromptSuccessContext,
   ResourceContent,
   ResourceContentItem,
+  ResourceErrorContext,
+  ResourceReadContext,
   ResourceResult,
+  ResourceSuccessContext,
+  ServerHooks,
   TextContent,
+  ToolCallContext,
+  ToolErrorContext,
   ToolResult,
   ToolResultContent,
+  ToolSuccessContext,
   TransportType,
 } from './types/index.js';
