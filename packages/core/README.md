@@ -215,6 +215,36 @@ class MonitoredServer {
 }
 ```
 
+### File Logging Example
+
+When running under Claude Desktop, the working directory is read-only. Use an absolute path:
+
+```typescript
+import fs from 'fs';
+import path from 'path';
+import os from 'os';
+import { MCPServer, type ServerHooks } from '@mcpkit-dev/core';
+
+// Write to home directory (or os.tmpdir() for temp files)
+const logPath = path.join(os.homedir(), 'mcp-server.log');
+const logStream = fs.createWriteStream(logPath, { flags: 'a' });
+
+const hooks: ServerHooks = {
+  onServerStart: () => logStream.write(`[${new Date().toISOString()}] Server started\n`),
+  onToolCall: ({ toolName, args }) => {
+    logStream.write(`[${new Date().toISOString()}] Tool ${toolName} called: ${JSON.stringify(args)}\n`);
+  },
+  onResourceRead: ({ uri }) => {
+    logStream.write(`[${new Date().toISOString()}] Reading resource: ${uri}\n`);
+  },
+};
+
+@MCPServer({ name: 'file-logged-server', version: '1.0.0', hooks })
+class MyServer { /* ... */ }
+```
+
+View logs with: `tail -f ~/mcp-server.log`
+
 ## Server Lifecycle
 
 ```typescript
