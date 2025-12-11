@@ -1,6 +1,6 @@
-# Contributing to valai
+# Contributing to MCPKit
 
-Thank you for your interest in contributing to valai! This document provides guidelines and instructions for contributing.
+Thank you for your interest in contributing to MCPKit! This document provides guidelines and instructions for contributing to the project.
 
 ## Table of Contents
 
@@ -8,360 +8,335 @@ Thank you for your interest in contributing to valai! This document provides gui
 - [Getting Started](#getting-started)
 - [Development Setup](#development-setup)
 - [Project Structure](#project-structure)
-- [Making Changes](#making-changes)
-- [Coding Standards](#coding-standards)
+- [Development Workflow](#development-workflow)
+- [Code Standards](#code-standards)
 - [Testing](#testing)
-- [Submitting Changes](#submitting-changes)
-- [Reporting Issues](#reporting-issues)
+- [Commit Guidelines](#commit-guidelines)
+- [Pull Request Process](#pull-request-process)
+- [Release Process](#release-process)
 
 ## Code of Conduct
 
-By participating in this project, you agree to maintain a respectful and inclusive environment. Please:
-
-- Be respectful and considerate in all interactions
-- Welcome newcomers and help them get started
-- Focus on constructive feedback
-- Accept responsibility for mistakes and learn from them
+By participating in this project, you agree to maintain a respectful and inclusive environment for everyone. Please be kind, considerate, and constructive in all interactions.
 
 ## Getting Started
 
-1. **Fork the repository** on GitHub
-2. **Clone your fork** locally:
-   ```bash
-   git clone https://github.com/YOUR_USERNAME/valai.git
-   cd valai
-   ```
-3. **Add upstream remote**:
-   ```bash
-   git remote add upstream https://github.com/v-checha/valai.git
-   ```
-
-## Development Setup
-
 ### Prerequisites
 
-- Node.js >= 18.0.0
-- npm >= 9.0.0
+- **Node.js**: >= 18.0.0
+- **npm**: >= 10.9.0
+- **Git**: Latest stable version
 
-### Installation
+### Development Setup
 
-```bash
-# Install dependencies
-npm install
+1. **Fork the repository** on GitHub
 
-# Build the project
-npm run build
+2. **Clone your fork**:
+   ```bash
+   git clone https://github.com/<your-username>/mcpkit.git
+   cd mcpkit
+   ```
 
-# Run tests
-npm test
+3. **Add upstream remote**:
+   ```bash
+   git remote add upstream https://github.com/anthropics/mcpkit.git
+   ```
+
+4. **Install dependencies**:
+   ```bash
+   npm install
+   ```
+
+5. **Build all packages**:
+   ```bash
+   npm run build
+   ```
+
+6. **Run tests** to verify setup:
+   ```bash
+   npm run test
+   ```
+
+## Project Structure
+
+MCPKit is a Turborepo monorepo with the following structure:
+
 ```
+mcpkit/
+├── packages/
+│   ├── core/           # Core decorators and server framework (@mcpkit-dev/core)
+│   ├── cli/            # CLI tool for project scaffolding (@mcpkit-dev/cli)
+│   └── testing/        # Testing utilities and mock clients (@mcpkit-dev/testing)
+├── examples/
+│   └── weather-server/ # Working example project
+├── scripts/
+│   └── release.sh      # Automated release script
+├── biome.json          # Code formatting and linting config
+├── tsconfig.base.json  # Shared TypeScript configuration
+└── turbo.json          # Turborepo pipeline configuration
+```
+
+### Package Dependencies
+
+- **@mcpkit-dev/core**: The main package containing decorators, transports, and server logic
+- **@mcpkit-dev/cli**: Depends on core for scaffolding templates
+- **@mcpkit-dev/testing**: Testing utilities that work with core
+
+## Development Workflow
 
 ### Available Scripts
 
 | Script | Description |
 |--------|-------------|
-| `npm run build` | Build the package |
-| `npm run dev` | Build in watch mode |
-| `npm test` | Run tests |
-| `npm run test:watch` | Run tests in watch mode |
-| `npm run bench` | Run benchmarks |
-| `npm run bench:run` | Run benchmarks once |
-| `npm run typecheck` | Type check without emitting |
-| `npm run lint` | Lint the codebase |
-| `npm run clean` | Clean build artifacts |
+| `npm run build` | Build all packages |
+| `npm run dev` | Watch mode for development |
+| `npm run test` | Run all tests |
+| `npm run typecheck` | TypeScript type checking |
+| `npm run lint` | Run Biome linter |
+| `npm run lint:fix` | Fix linting issues |
+| `npm run format` | Format code with Biome |
+| `npm run check` | Run full Biome check (lint + format) |
+| `npm run check:fix` | Fix all Biome issues |
+| `npm run clean` | Remove build artifacts |
 
-## Project Structure
+### Development Flow
+
+1. **Create a feature branch**:
+   ```bash
+   git checkout -b feature/your-feature-name
+   ```
+
+2. **Make your changes** in the appropriate package(s)
+
+3. **Run checks locally**:
+   ```bash
+   npm run check      # Lint and format check
+   npm run typecheck  # Type checking
+   npm run test       # Run tests
+   ```
+
+4. **Build to verify**:
+   ```bash
+   npm run build
+   ```
+
+## Code Standards
+
+### TypeScript Configuration
+
+The project uses strict TypeScript with the following key settings:
+
+- Target: ES2022
+- Module: NodeNext
+- Strict mode enabled
+- Experimental decorators enabled
+- No unused locals/parameters
+- No unchecked indexed access
+
+### Biome (Linting & Formatting)
+
+We use [Biome](https://biomejs.dev/) for linting and formatting. Key style rules:
+
+- **Indentation**: 2 spaces
+- **Line width**: 100 characters
+- **Quotes**: Single quotes
+- **Semicolons**: Always
+- **Trailing commas**: All (in JS/TS)
+- **Arrow function parentheses**: Always
+
+Run `npm run check:fix` to automatically fix most issues.
+
+### Code Style Guidelines
+
+- Write TypeScript with proper types - avoid `any` when possible
+- Use `const` by default, `let` only when reassignment is needed
+- Prefer `import type` for type-only imports
+- Include JSDoc comments for public APIs
+- Keep functions small and focused
+- Use descriptive variable and function names
+- Handle errors appropriately with custom error types
+
+### Example Code Style
+
+```typescript
+import type { ToolConfig } from './types';
+
+import { Tool } from '../decorators';
+import { MCPKitError } from '../errors';
+
+/**
+ * Executes a tool with the given configuration.
+ * @param config - The tool configuration
+ * @returns The execution result
+ * @throws {MCPKitError} When execution fails
+ */
+@Tool({ name: 'example' })
+export const executeTool = async (config: ToolConfig): Promise<Result> => {
+  if (!config.name) {
+    throw new MCPKitError('Tool name is required');
+  }
+
+  return performExecution(config);
+};
+```
+
+## Testing
+
+### Test Framework
+
+We use [Vitest](https://vitest.dev/) for testing with the following configuration:
+
+- Test files: `**/*.test.ts` (colocated with source files)
+- Environment: Node.js
+- Coverage provider: V8
+
+### Running Tests
+
+```bash
+# Run all tests
+npm run test
+
+# Run tests in watch mode (in a specific package)
+cd packages/core
+npm run test:watch
+
+# Run tests with coverage
+npm run test -- --coverage
+```
+
+### Writing Tests
+
+- Place test files alongside source files with `.test.ts` extension
+- Write descriptive test names that explain the expected behavior
+- Test both success and error cases
+- Use the testing utilities from `@mcpkit-dev/testing` for MCP-specific tests
+
+```typescript
+import { describe, it, expect } from 'vitest';
+import { MyClass } from './my-class';
+
+describe('MyClass', () => {
+  describe('myMethod', () => {
+    it('should return expected value when given valid input', () => {
+      const instance = new MyClass();
+      const result = instance.myMethod('valid');
+      expect(result).toBe('expected');
+    });
+
+    it('should throw error when given invalid input', () => {
+      const instance = new MyClass();
+      expect(() => instance.myMethod('')).toThrow('Invalid input');
+    });
+  });
+});
+```
+
+## Commit Guidelines
+
+### Commit Message Format
+
+We follow [Conventional Commits](https://www.conventionalcommits.org/):
 
 ```
-valai/
-├── packages/
-│   └── core/                 # Main package
-│       ├── src/
-│       │   ├── schemas/      # Schema types (string, number, object, etc.)
-│       │   ├── parse/        # Parsing context and results
-│       │   ├── repair/       # JSON repair utilities
-│       │   ├── types/        # TypeScript type definitions
-│       │   ├── factory.ts    # Schema factory (v.string(), v.object(), etc.)
-│       │   └── index.ts      # Public exports
-│       ├── __tests__/        # Test files
-│       ├── __benchmarks__/   # Benchmark files
-│       └── package.json
-├── scripts/                  # Build and publish scripts
-├── vitest.config.ts          # Test configuration
-├── tsconfig.json             # TypeScript configuration
-└── package.json              # Root package.json
-```
-
-## Making Changes
-
-### Branch Naming
-
-Use descriptive branch names:
-
-- `feature/add-date-schema` - New features
-- `fix/repair-nested-quotes` - Bug fixes
-- `docs/update-readme` - Documentation
-- `refactor/simplify-parser` - Code refactoring
-- `perf/optimize-repair` - Performance improvements
-
-### Commit Messages
-
-Follow conventional commit format:
-
-```
-type(scope): description
+<type>(<scope>): <description>
 
 [optional body]
 
 [optional footer]
 ```
 
-**Types:**
-- `feat` - New feature
-- `fix` - Bug fix
-- `docs` - Documentation changes
-- `style` - Code style changes (formatting, etc.)
-- `refactor` - Code refactoring
-- `perf` - Performance improvements
-- `test` - Adding or updating tests
-- `chore` - Maintenance tasks
+### Types
 
-**Examples:**
+- `feat`: New feature
+- `fix`: Bug fix
+- `docs`: Documentation changes
+- `style`: Code style changes (formatting, etc.)
+- `refactor`: Code refactoring
+- `perf`: Performance improvements
+- `test`: Adding or updating tests
+- `chore`: Maintenance tasks
+- `ci`: CI/CD changes
+
+### Scopes
+
+- `core`: Changes to @mcpkit-dev/core
+- `cli`: Changes to @mcpkit-dev/cli
+- `testing`: Changes to @mcpkit-dev/testing
+- `deps`: Dependency updates
+- `release`: Release-related changes
+
+### Examples
+
 ```
-feat(schema): add date validation support
-
-fix(repair): handle nested single quotes correctly
-
-docs(readme): add examples for parseLLM usage
-
-test(object): add tests for strict mode
-```
-
-## Coding Standards
-
-### TypeScript
-
-- Use TypeScript strict mode
-- Avoid `any` type - use `unknown` if type is truly unknown
-- Export types alongside implementations
-- Use JSDoc comments for public APIs
-
-```typescript
-/**
- * Validates that a string is a valid email address.
- *
- * @example
- * ```typescript
- * const schema = v.string().email();
- * schema.parse('user@example.com'); // OK
- * schema.parse('invalid'); // Throws
- * ```
- */
-email(message?: string): ValaiString {
-  // implementation
-}
+feat(core): add support for streaming responses
+fix(cli): resolve template generation on Windows
+docs: update installation instructions
+test(core): add unit tests for Tool decorator
+chore(deps): update typescript to 5.7.2
 ```
 
-### Code Style
+## Pull Request Process
 
-- Use 2 spaces for indentation
-- Use single quotes for strings
-- No semicolons (handled by prettier)
-- Prefer `const` over `let`
-- Use arrow functions for callbacks
-- Destructure when appropriate
+### Before Submitting
 
-### File Organization
-
-- One schema type per file in `schemas/`
-- Keep files focused and under 500 lines
-- Export public API from `index.ts`
-- Co-locate tests with source when possible
-
-## Testing
-
-### Running Tests
-
-```bash
-# Run all tests
-npm test
-
-# Run tests in watch mode
-npm run test:watch
-
-# Run specific test file
-npx vitest run src/__tests__/object.test.ts
-
-# Run tests with coverage
-npx vitest run --coverage
-```
-
-### Writing Tests
-
-- Place tests in `src/__tests__/` directory
-- Name test files `*.test.ts`
-- Use descriptive test names
-- Test both success and failure cases
-- Test edge cases
-
-```typescript
-import { describe, it, expect } from 'vitest';
-import { v } from '../factory.js';
-
-describe('v.string()', () => {
-  it('should parse valid strings', () => {
-    const schema = v.string();
-    expect(schema.parse('hello')).toBe('hello');
-  });
-
-  it('should reject non-strings', () => {
-    const schema = v.string();
-    expect(() => schema.parse(123)).toThrow();
-  });
-
-  describe('.email()', () => {
-    it('should validate email format', () => {
-      const schema = v.string().email();
-      expect(schema.parse('user@example.com')).toBe('user@example.com');
-    });
-
-    it('should reject invalid emails', () => {
-      const schema = v.string().email();
-      expect(() => schema.parse('invalid')).toThrow();
-    });
-  });
-});
-```
-
-### Benchmarks
-
-For performance-sensitive changes, add or update benchmarks:
-
-```typescript
-import { bench, describe } from 'vitest';
-import { v } from '../factory.js';
-
-describe('String Parsing', () => {
-  const schema = v.string().email();
-
-  bench('email validation', () => {
-    schema.parse('user@example.com');
-  });
-});
-```
-
-Run benchmarks:
-```bash
-npm run bench:run
-```
-
-## Submitting Changes
-
-### Pull Request Process
-
-1. **Update your fork**:
+1. **Sync with upstream**:
    ```bash
    git fetch upstream
    git rebase upstream/main
    ```
 
-2. **Create a feature branch**:
+2. **Run the full check suite**:
    ```bash
-   git checkout -b feature/your-feature
+   npm run prepublish:check
    ```
 
-3. **Make your changes** and commit them
+3. **Update documentation** if needed
 
-4. **Run checks**:
-   ```bash
-   npm run typecheck
-   npm run lint
-   npm test
-   ```
-
-5. **Push to your fork**:
-   ```bash
-   git push origin feature/your-feature
-   ```
-
-6. **Create a Pull Request** on GitHub
+4. **Add tests** for new functionality
 
 ### PR Guidelines
 
+- Use a clear, descriptive title following commit conventions
 - Fill out the PR template completely
-- Link related issues
-- Include tests for new features
-- Update documentation if needed
-- Keep PRs focused - one feature/fix per PR
-- Ensure all CI checks pass
+- Link related issues using keywords (`Fixes #123`, `Closes #456`)
+- Keep PRs focused - one feature or fix per PR
+- Respond to review feedback promptly
 
-### PR Template
+### Review Process
 
-```markdown
-## Description
-Brief description of changes
+1. Automated checks must pass (lint, tests, build)
+2. At least one maintainer approval required
+3. All review comments must be addressed
+4. Branch must be up to date with main
 
-## Type of Change
-- [ ] Bug fix
-- [ ] New feature
-- [ ] Breaking change
-- [ ] Documentation update
+## Release Process
 
-## Testing
-Describe how you tested the changes
+Releases are managed by maintainers using the release script. The process:
 
-## Checklist
-- [ ] Tests pass locally
-- [ ] Code follows project style
-- [ ] Documentation updated
-- [ ] No breaking changes (or documented)
-```
+1. Ensure clean working directory
+2. Run all checks and tests
+3. Bump version (patch/minor/major)
+4. Create git commit and tag
+5. Publish to npm
 
-## Reporting Issues
+### Versioning
 
-### Bug Reports
+We follow [Semantic Versioning](https://semver.org/):
 
-When reporting bugs, include:
+- **PATCH**: Bug fixes, backwards compatible
+- **MINOR**: New features, backwards compatible
+- **MAJOR**: Breaking changes
 
-1. **Description** - Clear description of the bug
-2. **Reproduction** - Steps to reproduce
-3. **Expected behavior** - What should happen
-4. **Actual behavior** - What actually happens
-5. **Environment** - Node version, OS, valai version
-6. **Code sample** - Minimal reproduction code
+### Changelog
 
-```markdown
-**Bug Description**
-parseLLM fails to extract JSON from markdown with language tag
-
-**Reproduction**
-const schema = v.object({ name: v.string() });
-schema.parseLLM('```json\n{"name": "test"}\n```');
-
-**Expected**
-{ name: 'test' }
-
-**Actual**
-Error: Expected object, received string
-
-**Environment**
-- Node: 20.10.0
-- OS: macOS 14.0
-- valai: 0.1.2
-```
-
-### Feature Requests
-
-For feature requests, include:
-
-1. **Problem** - What problem does this solve?
-2. **Proposal** - How should it work?
-3. **Alternatives** - Other solutions considered
-4. **Examples** - Code examples of desired API
+All notable changes are documented in [CHANGELOG.md](./CHANGELOG.md) following the [Keep a Changelog](https://keepachangelog.com/) format.
 
 ## Questions?
 
-- Open a [GitHub Discussion](https://github.com/v-checha/valai/discussions)
-- Check existing [Issues](https://github.com/v-checha/valai/issues)
+If you have questions about contributing:
 
-Thank you for contributing to valai!
+1. Check existing [issues](https://github.com/anthropics/mcpkit/issues) and [discussions](https://github.com/anthropics/mcpkit/discussions)
+2. Open a new issue or discussion if needed
+3. Reach out to maintainers
+
+Thank you for contributing to MCPKit!
