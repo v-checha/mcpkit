@@ -1,6 +1,6 @@
 {
   "name": "mcpkit",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "private": true,
   "description": "Developer-friendly toolkit for building Model Context Protocol (MCP) servers",
   "workspaces": [
