@@ -21,6 +21,8 @@ const sidebars: SidebarsConfig = {
         'guides/prompts',
         'guides/hooks',
         'guides/testing',
+        'guides/debugging',
+        'guides/tracing-decorator',
       ],
     },
     {
@@ -28,9 +30,11 @@ const sidebars: SidebarsConfig = {
       label: 'Advanced',
       items: [
         'advanced/middleware',
+        'advanced/middleware-utilities',
         'advanced/authentication',
         'advanced/rate-limiting',
         'advanced/plugins',
+        'advanced/plugins-guide',
         'advanced/composition',
         'advanced/gateway',
       ],
@@ -39,9 +43,10 @@ const sidebars: SidebarsConfig = {
       type: 'category',
       label: 'Observability',
       items: [
+        'observability/overview',
         'observability/metrics',
-        'observability/health-checks',
         'observability/tracing',
+        'observability/health-checks',
       ],
     },
     {

@@ -377,12 +377,51 @@ export function jwtAuth(options: JwtAuthOptions): Middleware {
 }
 
 /**
+ * Parse a duration string to seconds
+ * Supports: '1s', '30m', '1h', '7d', '1w', '1y'
+ */
+function parseDuration(duration: string | number): number {
+  if (typeof duration === 'number') {
+    return duration;
+  }
+
+  const match = duration.match(/^(\d+)\s*(s|m|h|d|w|y)$/i);
+  if (!match) {
+    throw new Error(
+      `Invalid duration format: "${duration}". Use formats like '1h', '30m', '7d', '1w', '1y' or a number (seconds).`,
+    );
+  }
+
+  const value = parseInt(match[1]!, 10);
+  const unit = match[2]!.toLowerCase();
+
+  const multipliers: Record<string, number> = {
+    s: 1,
+    m: 60,
+    h: 60 * 60,
+    d: 60 * 60 * 24,
+    w: 60 * 60 * 24 * 7,
+    y: 60 * 60 * 24 * 365,
+  };
+
+  return value * multipliers[unit]!;
+}
+
+/**
  * Create a JWT token (utility function for testing)
  *
  * @example
  * ```typescript
+ * // Using duration string
  * const token = createJwt(
  *   { sub: 'user-123', roles: ['admin'] },
+ *   'my-secret',
+ *   { expiresIn: '1h' }
+ * );
+ *
+ * // Using seconds
+ * const token2 = createJwt(
+ *   { sub: 'user-123' },
  *   'my-secret',
  *   { expiresIn: 3600 }
  * );
@@ -393,8 +432,10 @@ export function createJwt(
   secret: string | Buffer,
   options?: {
     algorithm?: 'HS256' | 'HS384' | 'HS512';
-    expiresIn?: number;
-    notBefore?: number;
+    /** Expiration time in seconds or duration string ('1h', '30m', '7d', '1w', '1y') */
+    expiresIn?: number | string;
+    /** Not before time in seconds or duration string */
+    notBefore?: number | string;
   },
 ): string {
   const algorithm = options?.algorithm ?? 'HS256';
@@ -406,12 +447,12 @@ export function createJwt(
     iat: payload.iat ?? now,
   };
 
-  if (options?.expiresIn) {
-    finalPayload.exp = now + options.expiresIn;
+  if (options?.expiresIn !== undefined) {
+    finalPayload.exp = now + parseDuration(options.expiresIn);
   }
 
-  if (options?.notBefore) {
-    finalPayload.nbf = now + options.notBefore;
+  if (options?.notBefore !== undefined) {
+    finalPayload.nbf = now + parseDuration(options.notBefore);
   }
 
   // Encode header

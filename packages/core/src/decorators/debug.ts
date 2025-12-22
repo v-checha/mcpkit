@@ -145,6 +145,9 @@ export function getDebugConfig(): DebugOptions {
 
 /**
  * Default console logger
+ *
+ * IMPORTANT: All output goes to stderr to avoid corrupting the stdio transport.
+ * For MCP servers using stdio, stdout is reserved for JSON-RPC messages.
  */
 const defaultLogger: DebugLogger = {
   log(level: DebugLevel, message: string, data?: Record<string, unknown>): void {
@@ -153,21 +156,9 @@ const defaultLogger: DebugLogger = {
 
     const formattedData = data ? ` ${JSON.stringify(data, null, 2)}` : '';
 
-    switch (level) {
-      case 'trace':
-      case 'debug':
-        console.debug(`${prefix} ${message}${formattedData}`);
-        break;
-      case 'info':
-        console.info(`${prefix} ${message}${formattedData}`);
-        break;
-      case 'warn':
-        console.warn(`${prefix} ${message}${formattedData}`);
-        break;
-      case 'error':
-        console.error(`${prefix} ${message}${formattedData}`);
-        break;
-    }
+    // Always use stderr to avoid corrupting stdio transport
+    // In MCP stdio transport, stdout is reserved for JSON-RPC messages
+    console.error(`${prefix} ${message}${formattedData}`);
   },
 };
 

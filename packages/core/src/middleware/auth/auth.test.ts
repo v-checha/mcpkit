@@ -387,7 +387,7 @@ describe('createJwt', () => {
     expect(payload.iat).toBeDefined();
   });
 
-  it('should set expiration time', () => {
+  it('should set expiration time with number (seconds)', () => {
     const token = createJwt({ sub: 'user-123' }, secret, { expiresIn: 3600 });
     const parts = token.split('.');
     const payload = JSON.parse(Buffer.from(parts[1]!, 'base64url').toString());
@@ -395,6 +395,52 @@ describe('createJwt', () => {
     expect(payload.exp).toBeDefined();
     expect(payload.exp).toBeGreaterThan(payload.iat);
     expect(payload.exp - payload.iat).toBe(3600);
+  });
+
+  it('should set expiration time with duration string', () => {
+    const token = createJwt({ sub: 'user-123' }, secret, { expiresIn: '1h' });
+    const parts = token.split('.');
+    const payload = JSON.parse(Buffer.from(parts[1]!, 'base64url').toString());
+
+    expect(payload.exp).toBeDefined();
+    expect(payload.exp).toBeGreaterThan(payload.iat);
+    expect(payload.exp - payload.iat).toBe(3600); // 1 hour = 3600 seconds
+  });
+
+  it('should support various duration string formats', () => {
+    const testCases = [
+      { input: '30s', expected: 30 },
+      { input: '5m', expected: 5 * 60 },
+      { input: '2h', expected: 2 * 60 * 60 },
+      { input: '7d', expected: 7 * 24 * 60 * 60 },
+      { input: '1w', expected: 7 * 24 * 60 * 60 },
+      { input: '1y', expected: 365 * 24 * 60 * 60 },
+    ];
+
+    for (const { input, expected } of testCases) {
+      const token = createJwt({ sub: 'user-123' }, secret, { expiresIn: input });
+      const parts = token.split('.');
+      const payload = JSON.parse(Buffer.from(parts[1]!, 'base64url').toString());
+      expect(payload.exp - payload.iat).toBe(expected);
+    }
+  });
+
+  it('should throw error for invalid duration format', () => {
+    expect(() => createJwt({ sub: 'user-123' }, secret, { expiresIn: 'invalid' })).toThrow(
+      /Invalid duration format/,
+    );
+    expect(() => createJwt({ sub: 'user-123' }, secret, { expiresIn: '1x' })).toThrow(
+      /Invalid duration format/,
+    );
+  });
+
+  it('should support notBefore with duration string', () => {
+    const token = createJwt({ sub: 'user-123' }, secret, { notBefore: '5m' });
+    const parts = token.split('.');
+    const payload = JSON.parse(Buffer.from(parts[1]!, 'base64url').toString());
+
+    expect(payload.nbf).toBeDefined();
+    expect(payload.nbf - payload.iat).toBe(300); // 5 minutes = 300 seconds
   });
 
   it('should support different algorithms', () => {

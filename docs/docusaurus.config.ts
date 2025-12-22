@@ -7,10 +7,10 @@ const config: Config = {
   tagline: 'Developer-friendly toolkit for building MCP servers',
   favicon: 'img/logo.svg',
 
-  url: 'https://mcpkit-dev.github.io',
+  url: 'https://v-checha.github.io',
   baseUrl: '/mcpkit/',
 
-  organizationName: 'mcpkit-dev',
+  organizationName: 'v-checha',
   projectName: 'mcpkit',
 
   onBrokenLinks: 'throw',
@@ -27,7 +27,7 @@ const config: Config = {
       {
         docs: {
           sidebarPath: './sidebars.ts',
-          editUrl: 'https://github.com/mcpkit-dev/mcpkit/tree/main/docs/',
+          editUrl: 'https://github.com/v-checha/mcpkit/tree/main/docs/',
         },
         blog: false,
         theme: {
@@ -53,7 +53,7 @@ const config: Config = {
           label: 'Docs',
         },
         {
-          href: 'https://github.com/mcpkit-dev/mcpkit',
+          href: 'https://github.com/v-checha/mcpkit',
           label: 'GitHub',
           position: 'right',
         },
@@ -89,11 +89,11 @@ const config: Config = {
           items: [
             {
               label: 'GitHub',
-              href: 'https://github.com/mcpkit-dev/mcpkit',
+              href: 'https://github.com/v-checha/mcpkit',
             },
             {
               label: 'Issues',
-              href: 'https://github.com/mcpkit-dev/mcpkit/issues',
+              href: 'https://github.com/v-checha/mcpkit/issues',
             },
           ],
         },

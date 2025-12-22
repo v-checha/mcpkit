@@ -48,7 +48,7 @@ export function generatePackageJson(config: ProjectConfig): object {
     author: config.author,
     license: 'MIT',
     dependencies: {
-      '@mcpkit-dev/core': '^1.0.0',
+      '@mcpkit-dev/core': '^2.0.0',
       'reflect-metadata': '^0.2.2',
     },
     devDependencies: {

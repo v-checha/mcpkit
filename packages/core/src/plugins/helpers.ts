@@ -36,6 +36,29 @@ export interface SimplePluginOptions {
    * Hooks to register
    */
   hooks?: Partial<ServerHooks>;
+
+  /**
+   * Called when plugin is registered
+   */
+  onRegister?: (ctx: import('./types.js').PluginContext) => void | Promise<void>;
+
+  /**
+   * Called before server starts
+   */
+  onBeforeStart?: (ctx: import('./types.js').PluginContext) => void | Promise<void>;
+
+  /**
+   * Called when server starts
+   */
+  onServerStart?: (
+    ctx: import('./types.js').PluginContext,
+    server: import('@modelcontextprotocol/sdk/server/mcp.js').McpServer,
+  ) => void | Promise<void>;
+
+  /**
+   * Called when server stops
+   */
+  onServerStop?: (ctx: import('./types.js').PluginContext) => void | Promise<void>;
 }
 
 /**
@@ -71,6 +94,10 @@ export function createPlugin(options: SimplePluginOptions): MCPKitPlugin {
     description: options.description,
     middleware,
     hooks: options.hooks,
+    onRegister: options.onRegister,
+    onBeforeStart: options.onBeforeStart,
+    onServerStart: options.onServerStart,
+    onServerStop: options.onServerStop,
   };
 }
 
