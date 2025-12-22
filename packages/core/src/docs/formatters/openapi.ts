@@ -426,7 +426,9 @@ export function formatOpenAPI(
   // Collect all unique tags
   const tagSet = new Set<string>();
   const collectTags = (item: { tags?: string[] }) => {
-    item.tags?.forEach((t) => tagSet.add(t));
+    item.tags?.forEach((t) => {
+      tagSet.add(t);
+    });
   };
 
   doc.tools.forEach(collectTags);

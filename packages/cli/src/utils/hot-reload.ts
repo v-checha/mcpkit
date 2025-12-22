@@ -91,9 +91,7 @@ export type HotReloadState = 'idle' | 'building' | 'running' | 'restarting' | 's
  * ```
  */
 export class HotReloadManager {
-  private options: Required<
-    Pick<HotReloadOptions, 'watchDirs' | 'clearConsole' | 'debounce'>
-  > &
+  private options: Required<Pick<HotReloadOptions, 'watchDirs' | 'clearConsole' | 'debounce'>> &
     HotReloadOptions;
   private watcher: FileWatcher | null = null;
   private serverProcess: ChildProcess | null = null;
@@ -101,7 +99,6 @@ export class HotReloadManager {
   private state: HotReloadState = 'idle';
   private restartQueued = false;
   private lastChangedFile: string | null = null;
-  private startTime: number = 0;
 
   constructor(options: HotReloadOptions) {
     this.options = {
@@ -193,16 +190,12 @@ export class HotReloadManager {
     console.log(chalk.yellow('  ⏳ Building...'));
 
     return new Promise((resolve) => {
-      this.buildProcess = spawn(
-        this.options.buildCommand!,
-        this.options.buildArgs ?? [],
-        {
-          cwd: this.options.cwd,
-          env: { ...process.env, ...this.options.env },
-          stdio: ['ignore', 'pipe', 'pipe'],
-          shell: true,
-        },
-      );
+      this.buildProcess = spawn(this.options.buildCommand!, this.options.buildArgs ?? [], {
+        cwd: this.options.cwd,
+        env: { ...process.env, ...this.options.env },
+        stdio: ['ignore', 'pipe', 'pipe'],
+        shell: true,
+      });
 
       let stderr = '';
 

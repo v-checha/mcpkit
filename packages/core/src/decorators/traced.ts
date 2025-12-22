@@ -144,10 +144,7 @@ export function Traced(options: TracedOptions = {}): MethodDecorator {
     const originalMethod = descriptor.value;
 
     if (typeof originalMethod === 'function') {
-      descriptor.value = async function (
-        this: unknown,
-        ...args: unknown[]
-      ): Promise<unknown> {
+      descriptor.value = async function (this: unknown, ...args: unknown[]): Promise<unknown> {
         const tracer = globalTracer;
 
         // If no tracer and optional is true, just run the method
@@ -203,11 +200,7 @@ export function Traced(options: TracedOptions = {}): MethodDecorator {
 /**
  * Record result as span attribute with size limiting
  */
-function recordResultAttribute(
-  span: Span,
-  result: unknown,
-  maxSize: number,
-): void {
+function recordResultAttribute(span: Span, result: unknown, maxSize: number): void {
   try {
     let resultStr: string;
     if (typeof result === 'string') {

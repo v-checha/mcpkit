@@ -1,8 +1,8 @@
-import type { IncomingMessage, ServerResponse } from 'node:http';
 import { EventEmitter } from 'node:events';
-import { describe, expect, it, vi } from 'vitest';
+import type { IncomingMessage, ServerResponse } from 'node:http';
+import { describe, expect, it } from 'vitest';
 import { MiddlewarePipeline } from '../pipeline.js';
-import { STATE_KEYS, type AuthContext } from '../types.js';
+import { type AuthContext, STATE_KEYS } from '../types.js';
 import { apiKeyAuth } from './api-key.js';
 import { bearerAuth } from './bearer.js';
 import { createJwt, jwtAuth } from './jwt.js';
@@ -10,11 +10,9 @@ import { createJwt, jwtAuth } from './jwt.js';
 /**
  * Create a mock request
  */
-function createMockRequest(options: {
-  method?: string;
-  url?: string;
-  headers?: Record<string, string>;
-} = {}): IncomingMessage {
+function createMockRequest(
+  options: { method?: string; url?: string; headers?: Record<string, string> } = {},
+): IncomingMessage {
   const req = new EventEmitter() as IncomingMessage;
   req.method = options.method ?? 'GET';
   req.url = options.url ?? '/';
@@ -94,7 +92,7 @@ describe('apiKeyAuth', () => {
     await pipeline.execute(req, res, undefined, undefined, async () => {});
 
     expect(authContext).toBeDefined();
-    expect(authContext!.authenticated).toBe(true);
+    expect(authContext?.authenticated).toBe(true);
   });
 
   it('should reject missing API key', async () => {
@@ -237,7 +235,7 @@ describe('apiKeyAuth', () => {
 
     await pipeline.execute(req, res, undefined, undefined, async () => {});
 
-    expect(authContext!.principal).toEqual({ userId: 'user-123', role: 'admin' });
+    expect(authContext?.principal).toEqual({ userId: 'user-123', role: 'admin' });
   });
 });
 
@@ -264,9 +262,9 @@ describe('jwtAuth', () => {
     await pipeline.execute(req, res, undefined, undefined, async () => {});
 
     expect(authContext).toBeDefined();
-    expect(authContext!.authenticated).toBe(true);
-    expect(authContext!.roles).toEqual(['admin']);
-    expect(authContext!.claims).toMatchObject({ sub: 'user-123' });
+    expect(authContext?.authenticated).toBe(true);
+    expect(authContext?.roles).toEqual(['admin']);
+    expect(authContext?.claims).toMatchObject({ sub: 'user-123' });
   });
 
   it('should reject expired JWT', async () => {
@@ -443,9 +441,9 @@ describe('bearerAuth', () => {
     await pipeline.execute(req, res, undefined, undefined, async () => {});
 
     expect(authContext).toBeDefined();
-    expect(authContext!.authenticated).toBe(true);
-    expect(authContext!.principal).toEqual({ userId: 'user-123' });
-    expect(authContext!.roles).toEqual(['user']);
+    expect(authContext?.authenticated).toBe(true);
+    expect(authContext?.principal).toEqual({ userId: 'user-123' });
+    expect(authContext?.roles).toEqual(['user']);
   });
 
   it('should reject invalid token', async () => {

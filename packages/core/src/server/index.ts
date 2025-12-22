@@ -1,4 +1,10 @@
 export { type BootstrappedServer, bootstrapServer } from './bootstrap.js';
+export type {
+  ComposedServerClass,
+  ComposedServerInstance,
+  ComposedServerMetadata,
+  ComposeOptions,
+} from './compose.js';
 export {
   combinePrompts,
   combineResources,
@@ -6,19 +12,6 @@ export {
   composeServers,
   createComposedServer,
 } from './compose.js';
-
-export type {
-  ComposedServerClass,
-  ComposedServerInstance,
-  ComposedServerMetadata,
-  ComposeOptions,
-} from './compose.js';
-
-export {
-  createGateway,
-  MCPGateway,
-} from './gateway.js';
-
 export type {
   CircuitBreakerConfig,
   CircuitState,
@@ -28,12 +21,10 @@ export type {
   UpstreamHealth,
   UpstreamServer,
 } from './gateway.js';
-
 export {
-  createInspector,
-  ServerInspector,
-} from './inspect.js';
-
+  createGateway,
+  MCPGateway,
+} from './gateway.js';
 export type {
   HealthCheckFn,
   HealthCheckResult,
@@ -41,4 +32,8 @@ export type {
   InspectionOptions,
   InspectionResult,
   ServerStats,
+} from './inspect.js';
+export {
+  createInspector,
+  ServerInspector,
 } from './inspect.js';

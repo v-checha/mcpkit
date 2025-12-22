@@ -15,7 +15,7 @@
       "!.turbo",
       "!**/dist",
       "!**/node_modules",
-      "!docs/**"
+      "!docs"
     ]
   },
   "formatter": {

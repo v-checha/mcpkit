@@ -247,17 +247,13 @@ export class MetricsCollector {
   constructor(options: MetricsCollectorOptions = {}) {
     this.prefix = options.prefix ?? 'mcpkit_';
     this.defaultLabels = options.defaultLabels ?? {};
-    const defaultBuckets = options.defaultBuckets ?? [0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10];
+    const defaultBuckets = options.defaultBuckets ?? [
+      0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10,
+    ];
 
     // Initialize built-in metrics
-    this.toolCallsTotal = this.registerCounter(
-      'tool_calls_total',
-      'Total number of tool calls',
-    );
-    this.toolErrorsTotal = this.registerCounter(
-      'tool_errors_total',
-      'Total number of tool errors',
-    );
+    this.toolCallsTotal = this.registerCounter('tool_calls_total', 'Total number of tool calls');
+    this.toolErrorsTotal = this.registerCounter('tool_errors_total', 'Total number of tool errors');
     this.toolDurationSeconds = this.registerHistogram(
       'tool_duration_seconds',
       'Tool call duration in seconds',
@@ -278,10 +274,7 @@ export class MetricsCollector {
       defaultBuckets,
     );
 
-    this.promptGetsTotal = this.registerCounter(
-      'prompt_gets_total',
-      'Total number of prompt gets',
-    );
+    this.promptGetsTotal = this.registerCounter('prompt_gets_total', 'Total number of prompt gets');
     this.promptErrorsTotal = this.registerCounter(
       'prompt_errors_total',
       'Total number of prompt errors',
@@ -417,7 +410,7 @@ export class MetricsCollector {
 
     for (const part of parts) {
       const match = part.match(/^([^=]+)="([^"]*)"$/);
-      if (match && match[1] && match[2] !== undefined) {
+      if (match?.[1] && match[2] !== undefined) {
         labels[match[1]] = match[2];
       }
     }

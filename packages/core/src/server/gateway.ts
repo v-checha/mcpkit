@@ -357,10 +357,7 @@ export class MCPGateway {
       }
 
       case 'weighted': {
-        const totalWeight = healthyUpstreams.reduce(
-          (sum, u) => sum + (u.weight ?? 1),
-          0,
-        );
+        const totalWeight = healthyUpstreams.reduce((sum, u) => sum + (u.weight ?? 1), 0);
         let random = Math.random() * totalWeight;
         for (const upstream of healthyUpstreams) {
           random -= upstream.weight ?? 1;
@@ -370,22 +367,18 @@ export class MCPGateway {
         }
         return healthyUpstreams[0];
       }
-
-      case 'round-robin':
-      default:
+      default: {
         const upstream = healthyUpstreams[this.roundRobinIndex % healthyUpstreams.length];
         this.roundRobinIndex = (this.roundRobinIndex + 1) % healthyUpstreams.length;
         return upstream;
+      }
     }
   }
 
   /**
    * Forward a tool call to an upstream server
    */
-  async forwardToolCall(
-    toolName: string,
-    args: Record<string, unknown>,
-  ): Promise<unknown> {
+  async forwardToolCall(toolName: string, args: Record<string, unknown>): Promise<unknown> {
     const upstream = this.findUpstreamForTool(toolName);
     if (!upstream) {
       throw new Error(`No upstream found for tool: ${toolName}`);

@@ -1,23 +1,21 @@
-import type { IncomingMessage, ServerResponse } from 'node:http';
 import { EventEmitter } from 'node:events';
-import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
+import type { IncomingMessage, ServerResponse } from 'node:http';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { MiddlewarePipeline } from './pipeline.js';
+import { MemoryRateLimitStore, type RateLimitInfo, rateLimit } from './rate-limit.js';
 import { STATE_KEYS } from './types.js';
-import {
-  MemoryRateLimitStore,
-  rateLimit,
-  type RateLimitInfo,
-} from './rate-limit.js';
 
 /**
  * Create a mock request
  */
-function createMockRequest(options: {
-  method?: string;
-  url?: string;
-  headers?: Record<string, string>;
-  remoteAddress?: string;
-} = {}): IncomingMessage {
+function createMockRequest(
+  options: {
+    method?: string;
+    url?: string;
+    headers?: Record<string, string>;
+    remoteAddress?: string;
+  } = {},
+): IncomingMessage {
   const req = new EventEmitter() as IncomingMessage;
   req.method = options.method ?? 'GET';
   req.url = options.url ?? '/';
@@ -199,12 +197,12 @@ describe('rateLimit middleware', () => {
     }
 
     // First 2 should succeed
-    expect(results[0]!.finalCalled).toBe(true);
-    expect(results[1]!.finalCalled).toBe(true);
+    expect(results[0]?.finalCalled).toBe(true);
+    expect(results[1]?.finalCalled).toBe(true);
 
     // Third should be blocked
-    expect(results[2]!.finalCalled).toBe(false);
-    expect(results[2]!.status).toBe(429);
+    expect(results[2]?.finalCalled).toBe(false);
+    expect(results[2]?.status).toBe(429);
   });
 
   it('should include rate limit headers', async () => {
@@ -236,7 +234,7 @@ describe('rateLimit middleware', () => {
         maxRequests: 2,
         windowMs: 60000,
         store,
-        keyGenerator: (ctx) => ctx.request.headers['x-user-id'] as string ?? 'anonymous',
+        keyGenerator: (ctx) => (ctx.request.headers['x-user-id'] as string) ?? 'anonymous',
       }),
     );
 
@@ -319,9 +317,9 @@ describe('rateLimit middleware', () => {
     await pipeline.execute(req, res, undefined, undefined, async () => {});
 
     expect(rateLimitInfo).toBeDefined();
-    expect(rateLimitInfo!.limit).toBe(10);
-    expect(rateLimitInfo!.remaining).toBe(9);
-    expect(rateLimitInfo!.limited).toBe(false);
+    expect(rateLimitInfo?.limit).toBe(10);
+    expect(rateLimitInfo?.remaining).toBe(9);
+    expect(rateLimitInfo?.limited).toBe(false);
   });
 
   it('should call custom onRateLimited handler', async () => {

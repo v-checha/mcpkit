@@ -7,7 +7,6 @@ import { describe, expect, it, vi } from 'vitest';
 import { Param, Prompt, Resource, Tool } from '../decorators/index.js';
 import { MCPServer } from '../decorators/server.js';
 import { MetadataStorage } from '../metadata/index.js';
-import type { ServerHooks } from '../types/hooks.js';
 import {
   combinePrompts,
   combineResources,
@@ -33,7 +32,12 @@ describe('Server Composition', () => {
     @Prompt({ name: 'weather-prompt', description: 'Weather prompt' })
     async weatherPrompt(@Param({ name: 'city' }) city: string) {
       return {
-        messages: [{ role: 'user' as const, content: { type: 'text' as const, text: `Weather in ${city}?` } }],
+        messages: [
+          {
+            role: 'user' as const,
+            content: { type: 'text' as const, text: `Weather in ${city}?` },
+          },
+        ],
       };
     }
   }
@@ -53,7 +57,12 @@ describe('Server Composition', () => {
     @Prompt({ name: 'news-prompt', description: 'News prompt' })
     async newsPrompt(@Param({ name: 'topic' }) topic: string) {
       return {
-        messages: [{ role: 'user' as const, content: { type: 'text' as const, text: `News about ${topic}?` } }],
+        messages: [
+          {
+            role: 'user' as const,
+            content: { type: 'text' as const, text: `News about ${topic}?` },
+          },
+        ],
       };
     }
   }
@@ -67,10 +76,7 @@ describe('Server Composition', () => {
         name: 'combined-server',
         version: '2.0.0',
         description: 'Combined weather and news',
-        servers: [
-          { instance: weatherServer },
-          { instance: newsServer },
-        ],
+        servers: [{ instance: weatherServer }, { instance: newsServer }],
       });
 
       expect(composed.name).toBe('combined-server');
@@ -96,7 +102,7 @@ describe('Server Composition', () => {
       const weatherServer = new WeatherServer();
       const newsServer = new NewsServer();
 
-      const composed = composeServers({
+      const _composed = composeServers({
         name: 'test',
         version: '1.0.0',
         servers: [
@@ -106,8 +112,9 @@ describe('Server Composition', () => {
       });
 
       // Check that tools have prefixed names
-      const toolNames = MetadataStorage.getToolsMetadata(Object.getPrototypeOf(weatherServer))
-        .map((t) => `weather_${t.name ?? String(t.propertyKey)}`);
+      const toolNames = MetadataStorage.getToolsMetadata(Object.getPrototypeOf(weatherServer)).map(
+        (t) => `weather_${t.name ?? String(t.propertyKey)}`,
+      );
 
       expect(toolNames).toContain('weather_getWeather');
     });
@@ -118,9 +125,7 @@ describe('Server Composition', () => {
       const composed = composeServers({
         name: 'test',
         version: '1.0.0',
-        servers: [
-          { instance: weatherServer, resourcePrefix: 'data:' },
-        ],
+        servers: [{ instance: weatherServer, resourcePrefix: 'data:' }],
       });
 
       expect(composed.servers[0].resourcePrefix).toBe('data:');
@@ -132,9 +137,7 @@ describe('Server Composition', () => {
       const composed = composeServers({
         name: 'test',
         version: '1.0.0',
-        servers: [
-          { instance: weatherServer, promptPrefix: 'wx_' },
-        ],
+        servers: [{ instance: weatherServer, promptPrefix: 'wx_' }],
       });
 
       expect(composed.servers[0].promptPrefix).toBe('wx_');
@@ -191,10 +194,7 @@ describe('Server Composition', () => {
       const composed = composeServers({
         name: 'test',
         version: '1.0.0',
-        servers: [
-          { instance: weatherServer },
-          { instance: newsServer },
-        ],
+        servers: [{ instance: weatherServer }, { instance: newsServer }],
       });
 
       expect(composed.servers).toHaveLength(2);
@@ -238,10 +238,7 @@ describe('Server Composition', () => {
       const ComposedServer = createComposedServer({
         name: 'composed',
         version: '1.0.0',
-        servers: [
-          { instance: weatherServer },
-          { instance: newsServer },
-        ],
+        servers: [{ instance: weatherServer }, { instance: newsServer }],
       });
 
       const instance = new ComposedServer();
@@ -372,7 +369,9 @@ describe('Server Composition', () => {
       })
       class Server1 {
         @Tool({ description: 'Test' })
-        async test() { return 'test'; }
+        async test() {
+          return 'test';
+        }
       }
 
       @MCPServer({
@@ -382,16 +381,15 @@ describe('Server Composition', () => {
       })
       class Server2 {
         @Tool({ description: 'Test' })
-        async test() { return 'test'; }
+        async test() {
+          return 'test';
+        }
       }
 
       const composed = composeServers({
         name: 'combined',
         version: '1.0.0',
-        servers: [
-          { instance: new Server1() },
-          { instance: new Server2() },
-        ],
+        servers: [{ instance: new Server1() }, { instance: new Server2() }],
       });
 
       expect(composed.hooks).toBeDefined();

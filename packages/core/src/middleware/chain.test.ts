@@ -217,9 +217,7 @@ describe('Middleware Chain Enhancements', () => {
       const ctx = createMockContext();
       await safeMw(ctx, vi.fn());
 
-      expect(ctx.response.end).toHaveBeenCalledWith(
-        expect.stringContaining('"code":"ERR"'),
-      );
+      expect(ctx.response.end).toHaveBeenCalledWith(expect.stringContaining('"code":"ERR"'));
     });
   });
 
@@ -321,9 +319,18 @@ describe('Middleware Chain Enhancements', () => {
       const group = createMiddlewareGroup({
         name: 'test-group',
         middleware: [
-          async (_ctx, next) => { order.push(1); await next(); },
-          async (_ctx, next) => { order.push(2); await next(); },
-          async (_ctx, next) => { order.push(3); await next(); },
+          async (_ctx, next) => {
+            order.push(1);
+            await next();
+          },
+          async (_ctx, next) => {
+            order.push(2);
+            await next();
+          },
+          async (_ctx, next) => {
+            order.push(3);
+            await next();
+          },
         ],
       });
 
@@ -432,13 +439,10 @@ describe('Middleware Chain Enhancements', () => {
       const apiHandler = vi.fn<Middleware>(async (_ctx, next) => await next());
       const webHandler = vi.fn<Middleware>(async (_ctx, next) => await next());
 
-      const selectMw = selectMiddleware(
-        (ctx) => ctx.path.startsWith('/api') ? 'api' : 'web',
-        {
-          api: apiHandler,
-          web: webHandler,
-        },
-      );
+      const selectMw = selectMiddleware((ctx) => (ctx.path.startsWith('/api') ? 'api' : 'web'), {
+        api: apiHandler,
+        web: webHandler,
+      });
 
       const apiCtx = createMockContext({ path: '/api/users' });
       const webCtx = createMockContext({ path: '/home' });

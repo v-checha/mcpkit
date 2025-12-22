@@ -118,7 +118,10 @@ export function createPlugin(options: SimplePluginOptions): MCPKitPlugin {
  * })
  * ```
  */
-export function definePlugin<TOptions = void, TApi extends Record<string, unknown> = Record<string, unknown>>(config: {
+export function definePlugin<
+  TOptions = void,
+  TApi extends Record<string, unknown> = Record<string, unknown>,
+>(config: {
   name: string;
   version: string;
   description?: string;
@@ -234,10 +237,7 @@ export function combinePlugins(
 /**
  * Create a middleware-only plugin
  */
-export function middlewarePlugin(
-  name: string,
-  ...middleware: Middleware[]
-): MCPKitPlugin {
+export function middlewarePlugin(name: string, ...middleware: Middleware[]): MCPKitPlugin {
   return {
     name,
     version: '1.0.0',
@@ -248,10 +248,7 @@ export function middlewarePlugin(
 /**
  * Create a hooks-only plugin
  */
-export function hooksPlugin(
-  name: string,
-  hooks: Partial<ServerHooks>,
-): MCPKitPlugin {
+export function hooksPlugin(name: string, hooks: Partial<ServerHooks>): MCPKitPlugin {
   return {
     name,
     version: '1.0.0',

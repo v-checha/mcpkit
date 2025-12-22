@@ -227,7 +227,11 @@ function decodeAndVerify(
   // Verify audience
   if (options.audience) {
     const audiences = Array.isArray(options.audience) ? options.audience : [options.audience];
-    const tokenAudiences = Array.isArray(payload.aud) ? payload.aud : payload.aud ? [payload.aud] : [];
+    const tokenAudiences = Array.isArray(payload.aud)
+      ? payload.aud
+      : payload.aud
+        ? [payload.aud]
+        : [];
 
     if (!audiences.some((aud) => tokenAudiences.includes(aud))) {
       throw new Error('Invalid audience');

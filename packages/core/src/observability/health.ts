@@ -64,7 +64,9 @@ export interface HealthCheckOptions {
   /**
    * Health check function
    */
-  check: () => Promise<Omit<HealthCheckResult, 'name' | 'timestamp' | 'duration'>> | Omit<HealthCheckResult, 'name' | 'timestamp' | 'duration'>;
+  check: () =>
+    | Promise<Omit<HealthCheckResult, 'name' | 'timestamp' | 'duration'>>
+    | Omit<HealthCheckResult, 'name' | 'timestamp' | 'duration'>;
 
   /**
    * Timeout in milliseconds (default: 5000)
@@ -205,13 +207,9 @@ export class HealthChecker {
    * Run all health checks
    */
   async check(): Promise<HealthResponse> {
-    const results = await Promise.all(
-      this.checks.map((check) => this.runCheck(check)),
-    );
+    const results = await Promise.all(this.checks.map((check) => this.runCheck(check)));
 
-    const criticalChecks = this.checks
-      .filter((c) => c.critical !== false)
-      .map((c) => c.name);
+    const criticalChecks = this.checks.filter((c) => c.critical !== false).map((c) => c.name);
 
     let overallStatus: HealthStatus = 'healthy';
 
@@ -325,11 +323,10 @@ export function healthMiddleware(
     // Handle health endpoint
     if (ctx.path === path && ctx.method === 'GET') {
       const health = await checker.check();
-      const statusCode = health.status === 'healthy' ? 200 : health.status === 'degraded' ? 200 : 503;
+      const statusCode =
+        health.status === 'healthy' ? 200 : health.status === 'degraded' ? 200 : 503;
 
-      const body = detailed
-        ? health
-        : { status: health.status, uptime: health.uptime };
+      const body = detailed ? health : { status: health.status, uptime: health.uptime };
 
       ctx.response.writeHead(statusCode, defaultHeaders);
       ctx.response.end(JSON.stringify(body));
@@ -376,9 +373,7 @@ export function createHealthHandler(
     const health = await checker.check();
     const statusCode = health.status === 'healthy' ? 200 : health.status === 'degraded' ? 200 : 503;
 
-    const body = detailed
-      ? health
-      : { status: health.status, uptime: health.uptime };
+    const body = detailed ? health : { status: health.status, uptime: health.uptime };
 
     res.writeHead(statusCode, defaultHeaders);
     res.end(JSON.stringify(body));

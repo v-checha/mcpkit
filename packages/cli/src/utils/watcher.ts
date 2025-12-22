@@ -1,5 +1,5 @@
-import { watch, type FSWatcher, type WatchEventType } from 'node:fs';
-import { readdir, stat } from 'node:fs/promises';
+import { type FSWatcher, type WatchEventType, watch } from 'node:fs';
+import { readdir } from 'node:fs/promises';
 import path from 'node:path';
 
 /**
@@ -47,15 +47,7 @@ export type WatchCallback = (event: WatchEvent) => void;
 /**
  * Default patterns to ignore
  */
-const DEFAULT_IGNORE = [
-  'node_modules',
-  'dist',
-  '.git',
-  '.DS_Store',
-  '*.log',
-  '*.map',
-  'coverage',
-];
+const DEFAULT_IGNORE = ['node_modules', 'dist', '.git', '.DS_Store', '*.log', '*.map', 'coverage'];
 
 /**
  * Default extensions to watch

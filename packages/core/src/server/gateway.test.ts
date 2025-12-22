@@ -2,18 +2,11 @@
  * Tests for MCP Gateway
  */
 
-import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
-import {
-  createGateway,
-  MCPGateway,
-  type UpstreamServer,
-  type GatewayOptions,
-} from './gateway.js';
+import { describe, expect, it, vi } from 'vitest';
+import { createGateway, type GatewayOptions, MCPGateway } from './gateway.js';
 
 describe('MCPGateway', () => {
-  const createTestOptions = (
-    overrides: Partial<GatewayOptions> = {},
-  ): GatewayOptions => ({
+  const createTestOptions = (overrides: Partial<GatewayOptions> = {}): GatewayOptions => ({
     name: 'test-gateway',
     version: '1.0.0',
     upstreams: [
@@ -86,16 +79,12 @@ describe('MCPGateway', () => {
     });
 
     it('should use random load balancing', () => {
-      const gateway = createGateway(
-        createTestOptions({ loadBalancing: 'random' }),
-      );
+      const gateway = createGateway(createTestOptions({ loadBalancing: 'random' }));
 
       // Just verify it returns a valid upstream
       const upstream = gateway.selectUpstream();
       expect(upstream).toBeDefined();
-      expect(['http://server1:3000', 'http://server2:3000']).toContain(
-        upstream?.url,
-      );
+      expect(['http://server1:3000', 'http://server2:3000']).toContain(upstream?.url);
     });
 
     it('should use weighted load balancing', () => {
@@ -119,15 +108,11 @@ describe('MCPGateway', () => {
       }
 
       // Heavy should be selected significantly more
-      expect(counts['http://heavy:3000']).toBeGreaterThan(
-        counts['http://light:3000'] * 2,
-      );
+      expect(counts['http://heavy:3000']).toBeGreaterThan(counts['http://light:3000'] * 2);
     });
 
     it('should use least-connections load balancing', () => {
-      const gateway = createGateway(
-        createTestOptions({ loadBalancing: 'least-connections' }),
-      );
+      const gateway = createGateway(createTestOptions({ loadBalancing: 'least-connections' }));
 
       // Initially both have 0 connections, so it should select first
       const upstream = gateway.selectUpstream();
@@ -295,9 +280,7 @@ describe('MCPGateway', () => {
       const gateway = createGateway(
         createTestOptions({
           timeout: 60000,
-          upstreams: [
-            { url: 'http://server1:3000', timeout: 5000 },
-          ],
+          upstreams: [{ url: 'http://server1:3000', timeout: 5000 }],
         }),
       );
 
@@ -309,9 +292,7 @@ describe('MCPGateway', () => {
     it('should use custom retries', () => {
       const gateway = createGateway(
         createTestOptions({
-          upstreams: [
-            { url: 'http://server1:3000', retries: 5 },
-          ],
+          upstreams: [{ url: 'http://server1:3000', retries: 5 }],
         }),
       );
 

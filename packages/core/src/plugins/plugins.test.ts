@@ -330,13 +330,17 @@ describe('Plugin System', () => {
       const p1: MCPKitPlugin = {
         name: 'p1',
         version: '1.0.0',
-        onRegister: () => { order.push('p1'); },
+        onRegister: () => {
+          order.push('p1');
+        },
       };
 
       const p2: MCPKitPlugin = {
         name: 'p2',
         version: '1.0.0',
-        onRegister: () => { order.push('p2'); },
+        onRegister: () => {
+          order.push('p2');
+        },
       };
 
       registry.register(p1);
@@ -354,14 +358,18 @@ describe('Plugin System', () => {
       const base: MCPKitPlugin = {
         name: 'base',
         version: '1.0.0',
-        onRegister: () => { order.push('base'); },
+        onRegister: () => {
+          order.push('base');
+        },
       };
 
       const dependent: MCPKitPlugin = {
         name: 'dependent',
         version: '1.0.0',
         dependencies: ['base'],
-        onRegister: () => { order.push('dependent'); },
+        onRegister: () => {
+          order.push('dependent');
+        },
       };
 
       // Register in reverse order
@@ -598,14 +606,18 @@ describe('Plugin System', () => {
       const base: MCPKitPlugin = {
         name: 'base',
         version: '1.0.0',
-        onServerStop: () => { order.push('base'); },
+        onServerStop: () => {
+          order.push('base');
+        },
       };
 
       const dependent: MCPKitPlugin = {
         name: 'dependent',
         version: '1.0.0',
         dependencies: ['base'],
-        onServerStop: () => { order.push('dependent'); },
+        onServerStop: () => {
+          order.push('dependent');
+        },
       };
 
       registry.register(base);

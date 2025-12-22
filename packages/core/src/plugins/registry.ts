@@ -104,12 +104,7 @@ export class PluginRegistryImpl implements PluginRegistry {
       throw new Error(`Plugin "${plugin.name}" is already registered`);
     }
 
-    const context = createPluginContext(
-      plugin,
-      this.serverName,
-      this.serverVersion,
-      this,
-    );
+    const context = createPluginContext(plugin, this.serverName, this.serverVersion, this);
 
     this.plugins.set(plugin.name, {
       plugin,
@@ -178,9 +173,7 @@ export class PluginRegistryImpl implements PluginRegistry {
       const deps = entry.plugin.dependencies ?? [];
       for (const dep of deps) {
         if (!this.plugins.has(dep)) {
-          throw new Error(
-            `Plugin "${name}" depends on "${dep}" which is not registered`,
-          );
+          throw new Error(`Plugin "${name}" depends on "${dep}" which is not registered`);
         }
         visit(dep);
       }
@@ -269,7 +262,10 @@ export class PluginRegistryImpl implements PluginRegistry {
           await plugin.onServerStart(context, server);
         } catch (error) {
           if (plugin.onError) {
-            await plugin.onError(context, error instanceof Error ? error : new Error(String(error)));
+            await plugin.onError(
+              context,
+              error instanceof Error ? error : new Error(String(error)),
+            );
           }
           throw error;
         }

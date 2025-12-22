@@ -6,10 +6,7 @@
  */
 
 import 'reflect-metadata';
-import {
-  getDocumentedOptions,
-  getServerDocumentedOptions,
-} from '../decorators/documented.js';
+import { getDocumentedOptions, getServerDocumentedOptions } from '../decorators/documented.js';
 import {
   type Constructor,
   MetadataStorage,
@@ -17,13 +14,7 @@ import {
   type ResourceMetadata,
   type ToolMetadata,
 } from '../metadata/index.js';
-import type {
-  ParamDoc,
-  PromptDoc,
-  ResourceDoc,
-  ServerDoc,
-  ToolDoc,
-} from './types.js';
+import type { ParamDoc, PromptDoc, ResourceDoc, ServerDoc, ToolDoc } from './types.js';
 
 /**
  * Generator version for tracking
@@ -54,10 +45,7 @@ function typeToString(type: unknown): string {
 /**
  * Extract parameter documentation from metadata
  */
-function extractParamDocs(
-  target: object,
-  propertyKey: string | symbol,
-): ParamDoc[] {
+function extractParamDocs(target: object, propertyKey: string | symbol): ParamDoc[] {
   const paramsMeta = MetadataStorage.getParamsMetadata(target, propertyKey);
   const designTypes = MetadataStorage.getDesignParamTypes(target, propertyKey);
 
@@ -85,9 +73,8 @@ function extractParamDocs(
 function extractUriParams(uri: string): string[] {
   const params: string[] = [];
   const regex = /\{([^}]+)\}/g;
-  let match: RegExpExecArray | null;
 
-  while ((match = regex.exec(uri)) !== null) {
+  for (const match of uri.matchAll(regex)) {
     if (match[1]) {
       params.push(match[1]);
     }
@@ -99,10 +86,7 @@ function extractUriParams(uri: string): string[] {
 /**
  * Extract tool documentation
  */
-function extractToolDoc(
-  target: object,
-  toolMeta: ToolMetadata,
-): ToolDoc {
+function extractToolDoc(target: object, toolMeta: ToolMetadata): ToolDoc {
   const propertyKey = toolMeta.propertyKey;
   const documented = getDocumentedOptions(target, propertyKey);
 
@@ -136,10 +120,7 @@ function extractToolDoc(
 /**
  * Extract resource documentation
  */
-function extractResourceDoc(
-  target: object,
-  resourceMeta: ResourceMetadata,
-): ResourceDoc {
+function extractResourceDoc(target: object, resourceMeta: ResourceMetadata): ResourceDoc {
   const propertyKey = resourceMeta.propertyKey;
   const documented = getDocumentedOptions(target, propertyKey);
 
@@ -187,10 +168,7 @@ function extractResourceDoc(
 /**
  * Extract prompt documentation
  */
-function extractPromptDoc(
-  target: object,
-  promptMeta: PromptMetadata,
-): PromptDoc {
+function extractPromptDoc(target: object, promptMeta: PromptMetadata): PromptDoc {
   const propertyKey = promptMeta.propertyKey;
   const documented = getDocumentedOptions(target, propertyKey);
 
@@ -241,9 +219,7 @@ export function extractServerDoc(serverClass: Constructor): ServerDoc {
   const serverOptions = MetadataStorage.getServerOptions(serverClass);
 
   if (!serverOptions) {
-    throw new Error(
-      `Class ${serverClass.name} is not decorated with @MCPServer`,
-    );
+    throw new Error(`Class ${serverClass.name} is not decorated with @MCPServer`);
   }
 
   const prototype = serverClass.prototype;
@@ -255,9 +231,7 @@ export function extractServerDoc(serverClass: Constructor): ServerDoc {
 
   // Extract resources
   const resourcesMeta = MetadataStorage.getResourcesMetadata(prototype);
-  const resources = resourcesMeta.map((meta) =>
-    extractResourceDoc(prototype, meta),
-  );
+  const resources = resourcesMeta.map((meta) => extractResourceDoc(prototype, meta));
 
   // Extract prompts
   const promptsMeta = MetadataStorage.getPromptsMetadata(prototype);
@@ -280,6 +254,6 @@ export function extractServerDoc(serverClass: Constructor): ServerDoc {
  * Extract documentation from a server instance
  */
 export function extractServerDocFromInstance(instance: object): ServerDoc {
-  const constructor = instance.constructor as Constructor;
-  return extractServerDoc(constructor);
+  const ctor = instance.constructor as Constructor;
+  return extractServerDoc(ctor);
 }

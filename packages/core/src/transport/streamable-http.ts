@@ -4,7 +4,11 @@ import { createServer } from 'node:http';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 import type { Transport } from '@modelcontextprotocol/sdk/shared/transport.js';
 import type { JSONRPCMessage } from '@modelcontextprotocol/sdk/types.js';
-import { MiddlewarePipeline, type MiddlewareContext, type MiddlewareInput } from '../middleware/index.js';
+import {
+  type MiddlewareContext,
+  type MiddlewareInput,
+  MiddlewarePipeline,
+} from '../middleware/index.js';
 
 /**
  * Options for creating a Streamable HTTP transport
@@ -142,7 +146,10 @@ export class StreamableHttpTransport implements Transport {
     // Add CORS headers for browser clients (before middleware for preflight)
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, mcp-session-id, Authorization, X-API-Key');
+    res.setHeader(
+      'Access-Control-Allow-Headers',
+      'Content-Type, mcp-session-id, Authorization, X-API-Key',
+    );
 
     // Handle CORS preflight (before middleware)
     if (req.method === 'OPTIONS') {

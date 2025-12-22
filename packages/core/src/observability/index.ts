@@ -46,13 +46,23 @@
  * @packageDocumentation
  */
 
-// Metrics
+export type {
+  HealthCheckFn,
+  HealthCheckOptions,
+  HealthCheckResult,
+  HealthEndpointOptions,
+  HealthPluginOptions,
+  HealthResponse,
+  HealthStatus,
+} from './health.js';
+// Health checks
 export {
-  createMetricsCollector,
-  MetricsCollector,
-  metricsPlugin,
-} from './metrics.js';
-
+  createHealthChecker,
+  createHealthHandler,
+  HealthChecker,
+  healthMiddleware,
+  healthPlugin,
+} from './health.js';
 export type {
   Counter,
   Gauge,
@@ -63,35 +73,12 @@ export type {
   MetricsCollectorOptions,
   MetricType,
 } from './metrics.js';
-
-// Health checks
+// Metrics
 export {
-  createHealthChecker,
-  createHealthHandler,
-  HealthChecker,
-  healthMiddleware,
-  healthPlugin,
-} from './health.js';
-
-export type {
-  HealthCheckFn,
-  HealthCheckOptions,
-  HealthCheckResult,
-  HealthEndpointOptions,
-  HealthPluginOptions,
-  HealthResponse,
-  HealthStatus,
-} from './health.js';
-
-// Tracing
-export {
-  consoleExporter,
-  createTracer,
-  memoryExporter,
-  TracerImpl,
-  tracingPlugin,
-} from './tracing.js';
-
+  createMetricsCollector,
+  MetricsCollector,
+  metricsPlugin,
+} from './metrics.js';
 export type {
   Span,
   SpanAttributes,
@@ -104,4 +91,12 @@ export type {
   StartSpanOptions,
   Tracer,
   TracerOptions,
+} from './tracing.js';
+// Tracing
+export {
+  consoleExporter,
+  createTracer,
+  memoryExporter,
+  TracerImpl,
+  tracingPlugin,
 } from './tracing.js';

@@ -167,7 +167,11 @@ export interface Tracer {
   /**
    * Run a function within a span
    */
-  withSpan<T>(name: string, fn: (span: Span) => T | Promise<T>, options?: StartSpanOptions): Promise<T>;
+  withSpan<T>(
+    name: string,
+    fn: (span: Span) => T | Promise<T>,
+    options?: StartSpanOptions,
+  ): Promise<T>;
 }
 
 /**
@@ -467,11 +471,9 @@ export class TracerImpl implements Tracer {
    * Get server hooks for automatic tracing
    */
   getHooks(): Partial<ServerHooks> {
-    const tracer = this;
-
     return {
       onToolCall: ({ toolName, args }) => {
-        const span = tracer.startSpan(`tool:${toolName}`, { kind: 'server' });
+        const span = this.startSpan(`tool:${toolName}`, { kind: 'server' });
         span.setAttribute('mcp.type', 'tool');
         span.setAttribute('mcp.tool.name', toolName);
         if (args) {
@@ -479,67 +481,67 @@ export class TracerImpl implements Tracer {
         }
       },
       onToolSuccess: ({ toolName, duration }) => {
-        const span = tracer.getActiveSpan();
+        const span = this.getActiveSpan();
         if (span && span.name === `tool:${toolName}`) {
           span.setAttribute('mcp.tool.duration_ms', duration ?? 0);
           span.setStatus('ok');
           span.end();
-          tracer.bufferSpan(span);
+          this.bufferSpan(span);
         }
       },
       onToolError: ({ toolName, error, duration }) => {
-        const span = tracer.getActiveSpan();
+        const span = this.getActiveSpan();
         if (span && span.name === `tool:${toolName}`) {
           span.setAttribute('mcp.tool.duration_ms', duration ?? 0);
           span.recordException(error);
           span.end();
-          tracer.bufferSpan(span);
+          this.bufferSpan(span);
         }
       },
       onResourceRead: ({ uri }) => {
-        const span = tracer.startSpan(`resource:read`, { kind: 'server' });
+        const span = this.startSpan(`resource:read`, { kind: 'server' });
         span.setAttribute('mcp.type', 'resource');
         span.setAttribute('mcp.resource.uri', uri);
       },
       onResourceSuccess: ({ duration }) => {
-        const span = tracer.getActiveSpan();
+        const span = this.getActiveSpan();
         if (span && span.name === 'resource:read') {
           span.setAttribute('mcp.resource.duration_ms', duration ?? 0);
           span.setStatus('ok');
           span.end();
-          tracer.bufferSpan(span);
+          this.bufferSpan(span);
         }
       },
       onResourceError: ({ error, duration }) => {
-        const span = tracer.getActiveSpan();
+        const span = this.getActiveSpan();
         if (span && span.name === 'resource:read') {
           span.setAttribute('mcp.resource.duration_ms', duration ?? 0);
           span.recordException(error);
           span.end();
-          tracer.bufferSpan(span);
+          this.bufferSpan(span);
         }
       },
       onPromptGet: ({ promptName }) => {
-        const span = tracer.startSpan(`prompt:${promptName}`, { kind: 'server' });
+        const span = this.startSpan(`prompt:${promptName}`, { kind: 'server' });
         span.setAttribute('mcp.type', 'prompt');
         span.setAttribute('mcp.prompt.name', promptName);
       },
       onPromptSuccess: ({ promptName, duration }) => {
-        const span = tracer.getActiveSpan();
+        const span = this.getActiveSpan();
         if (span && span.name === `prompt:${promptName}`) {
           span.setAttribute('mcp.prompt.duration_ms', duration ?? 0);
           span.setStatus('ok');
           span.end();
-          tracer.bufferSpan(span);
+          this.bufferSpan(span);
         }
       },
       onPromptError: ({ promptName, error, duration }) => {
-        const span = tracer.getActiveSpan();
+        const span = this.getActiveSpan();
         if (span && span.name === `prompt:${promptName}`) {
           span.setAttribute('mcp.prompt.duration_ms', duration ?? 0);
           span.recordException(error);
           span.end();
-          tracer.bufferSpan(span);
+          this.bufferSpan(span);
         }
       },
     };

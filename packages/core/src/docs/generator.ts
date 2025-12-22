@@ -23,12 +23,7 @@
 import type { Constructor } from '../metadata/index.js';
 import { extractServerDoc, extractServerDocFromInstance } from './extractor.js';
 import { formatJson, formatMarkdown, formatOpenAPI } from './formatters/index.js';
-import type {
-  DocFormat,
-  DocGeneratorOptions,
-  DocGeneratorResult,
-  ServerDoc,
-} from './types.js';
+import type { DocFormat, DocGeneratorOptions, DocGeneratorResult, ServerDoc } from './types.js';
 
 /**
  * Documentation generator class

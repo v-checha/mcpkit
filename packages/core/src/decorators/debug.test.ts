@@ -1,17 +1,17 @@
 import 'reflect-metadata';
-import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import {
-  Debug,
   configureDebug,
+  Debug,
+  type DebugLevel,
+  type DebugLogger,
   getDebugConfig,
   getDebugOptions,
   isDebugEnabled,
-  type DebugLogger,
-  type DebugLevel,
 } from './debug.js';
+import { Param } from './param.js';
 import { MCPServer } from './server.js';
 import { Tool } from './tool.js';
-import { Param } from './param.js';
 
 describe('@Debug decorator', () => {
   let mockLogger: DebugLogger;

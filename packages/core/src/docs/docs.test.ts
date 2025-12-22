@@ -1,18 +1,18 @@
 import 'reflect-metadata';
 import { beforeEach, describe, expect, it } from 'vitest';
+import { Documented, ServerDocumented } from '../decorators/documented.js';
+import { Param } from '../decorators/param.js';
+import { Prompt } from '../decorators/prompt.js';
+import { Resource } from '../decorators/resource.js';
 import { MCPServer } from '../decorators/server.js';
 import { Tool } from '../decorators/tool.js';
-import { Resource } from '../decorators/resource.js';
-import { Prompt } from '../decorators/prompt.js';
-import { Param } from '../decorators/param.js';
-import { Documented, ServerDocumented } from '../decorators/documented.js';
 import {
-  extractServerDoc,
   DocGenerator,
-  generateDocs,
+  extractServerDoc,
   formatJson,
   formatMarkdown,
   formatOpenAPI,
+  generateDocs,
 } from './index.js';
 
 describe('Documentation Generator', () => {
@@ -27,9 +27,7 @@ describe('Documentation Generator', () => {
     @Documented({
       summary: 'Generate a greeting',
       tags: ['greeting', 'utility'],
-      examples: [
-        { name: 'Basic greeting', input: { name: 'World' }, output: 'Hello, World!' },
-      ],
+      examples: [{ name: 'Basic greeting', input: { name: 'World' }, output: 'Hello, World!' }],
       since: '1.0.0',
     })
     async greet(@Param({ name: 'name', description: 'Name to greet' }) name: string) {
@@ -54,7 +52,12 @@ describe('Documentation Generator', () => {
       notes: ['Supports multiple genres', 'Length varies by topic'],
     })
     async storyPrompt(@Param({ name: 'topic' }) topic: string) {
-      return [{ role: 'user' as const, content: { type: 'text' as const, text: `Write a story about ${topic}` } }];
+      return [
+        {
+          role: 'user' as const,
+          content: { type: 'text' as const, text: `Write a story about ${topic}` },
+        },
+      ];
     }
   }
 

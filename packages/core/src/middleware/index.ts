@@ -26,49 +26,25 @@
 
 // Auth middleware
 export {
-  apiKeyAuth,
   type ApiKeyAuthOptions,
-  bearerAuth,
+  apiKeyAuth,
   type BearerAuthOptions,
   type BearerValidationResult,
+  bearerAuth,
   createJwt,
-  jwtAuth,
   type JwtAuthOptions,
   type JwtPayload,
+  jwtAuth,
 } from './auth/index.js';
-
-// Pipeline
-export {
-  compose,
-  createPipeline,
-  MiddlewarePipeline,
-} from './pipeline.js';
-
-// Rate limiting
-export {
-  MemoryRateLimitStore,
-  rateLimit,
-  type RateLimitInfo,
-  type RateLimitOptions,
-  type RateLimitStore,
-} from './rate-limit.js';
-
-// Tracing
-export {
-  advancedTracing,
-  CORRELATION_ID_KEY,
-  getCorrelationId,
-  getTraceContext,
-  TRACE_CONTEXT_KEY,
-  TraceContext,
-  tracing,
-} from './tracing.js';
-
 export type {
-  TracingOptions,
-  TraceSpan,
-} from './tracing.js';
-
+  CacheOptions,
+  ConditionalOptions,
+  ErrorHandlerOptions,
+  MiddlewareGroupOptions,
+  MiddlewareHooksOptions,
+  RetryOptions,
+  TimeoutOptions,
+} from './chain.js';
 // Middleware chain enhancements
 export {
   conditional,
@@ -82,16 +58,34 @@ export {
   withRetry,
   withTimeout,
 } from './chain.js';
-
+// Pipeline
+export {
+  compose,
+  createPipeline,
+  MiddlewarePipeline,
+} from './pipeline.js';
+// Rate limiting
+export {
+  MemoryRateLimitStore,
+  type RateLimitInfo,
+  type RateLimitOptions,
+  type RateLimitStore,
+  rateLimit,
+} from './rate-limit.js';
 export type {
-  CacheOptions,
-  ConditionalOptions,
-  ErrorHandlerOptions,
-  MiddlewareGroupOptions,
-  MiddlewareHooksOptions,
-  RetryOptions,
-  TimeoutOptions,
-} from './chain.js';
+  TraceSpan,
+  TracingOptions,
+} from './tracing.js';
+// Tracing
+export {
+  advancedTracing,
+  CORRELATION_ID_KEY,
+  getCorrelationId,
+  getTraceContext,
+  TRACE_CONTEXT_KEY,
+  TraceContext,
+  tracing,
+} from './tracing.js';
 
 // Types
 export type {

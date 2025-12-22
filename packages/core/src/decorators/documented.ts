@@ -198,9 +198,7 @@ const SERVER_DOCUMENTED_KEY = Symbol('mcpkit:serverDocumented');
  * class WeatherServer { ... }
  * ```
  */
-export function ServerDocumented(
-  options: ServerDocumentedOptions,
-): ClassDecorator {
+export function ServerDocumented(options: ServerDocumentedOptions): ClassDecorator {
   return function (target: object): void {
     Reflect.defineMetadata(SERVER_DOCUMENTED_KEY, options, target);
   };
@@ -209,8 +207,6 @@ export function ServerDocumented(
 /**
  * Get server documented options
  */
-export function getServerDocumentedOptions(
-  target: object,
-): ServerDocumentedOptions | undefined {
+export function getServerDocumentedOptions(target: object): ServerDocumentedOptions | undefined {
   return Reflect.getMetadata(SERVER_DOCUMENTED_KEY, target);
 }

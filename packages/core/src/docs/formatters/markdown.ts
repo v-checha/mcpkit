@@ -16,7 +16,7 @@ import type {
  * Escape markdown special characters
  */
 function escapeMarkdown(text: string): string {
-  return text.replace(/([*_`~\[\]()\\])/g, '\\$1');
+  return text.replace(/([*_`~[\]()\\])/g, '\\$1');
 }
 
 /**
@@ -38,7 +38,7 @@ function formatParamTable(params: ParamDoc[]): string {
     lines.push(`| \`${param.name}\` | ${param.type} | ${required} | ${desc} |`);
   }
 
-  return lines.join('\n') + '\n';
+  return `${lines.join('\n')}\n`;
 }
 
 /**

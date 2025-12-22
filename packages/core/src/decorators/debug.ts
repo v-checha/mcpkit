@@ -242,9 +242,7 @@ function createDebugWrapper(
       };
 
       if (config.logArgs && args.length > 0) {
-        logData.args = args.map((arg, i) =>
-          sanitizeValue(`arg${i}`, arg, config.sanitize),
-        );
+        logData.args = args.map((arg, i) => sanitizeValue(`arg${i}`, arg, config.sanitize));
         debugContext.args = args;
       }
 
@@ -401,10 +399,7 @@ export function getDebugOptions(
 /**
  * Check if debug is enabled for a method
  */
-export function isDebugEnabled(
-  target: object,
-  propertyKey: string | symbol,
-): boolean {
+export function isDebugEnabled(target: object, propertyKey: string | symbol): boolean {
   const options = getDebugOptions(target, propertyKey);
   if (!options) {
     return globalDebugConfig.enabled ?? false;

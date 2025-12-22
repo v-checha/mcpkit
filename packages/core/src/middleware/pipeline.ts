@@ -1,10 +1,10 @@
 import type { IncomingMessage, ServerResponse } from 'node:http';
 import {
+  isNamedMiddleware,
   type Middleware,
   type MiddlewareContext,
   type MiddlewareInput,
   type MiddlewareOptions,
-  isNamedMiddleware,
 } from './types.js';
 
 /**
@@ -73,7 +73,10 @@ function matchPath(path: string, pattern: string): boolean {
 /**
  * Check if middleware should run for the given context
  */
-function shouldRunMiddleware(ctx: MiddlewareContext, options: Required<MiddlewareOptions>): boolean {
+function shouldRunMiddleware(
+  ctx: MiddlewareContext,
+  options: Required<MiddlewareOptions>,
+): boolean {
   // Check excluded paths first
   if (options.excludePaths.length > 0) {
     for (const pattern of options.excludePaths) {
@@ -237,9 +240,7 @@ export class MiddlewarePipeline {
     const ctx = createContext(request, response, sessionId, body);
 
     // Build the middleware chain
-    const applicableMiddleware = this.middleware.filter((m) =>
-      shouldRunMiddleware(ctx, m.options),
-    );
+    const applicableMiddleware = this.middleware.filter((m) => shouldRunMiddleware(ctx, m.options));
 
     // Execute chain using recursion
     let index = 0;

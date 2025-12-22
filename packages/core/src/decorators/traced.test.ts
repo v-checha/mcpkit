@@ -2,18 +2,18 @@
  * Tests for @Traced decorator
  */
 
-import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { createTracer, memoryExporter, type Tracer } from '../observability/tracing.js';
 import {
+  getGlobalTracer,
+  getTracedMetadata,
+  getTracedOptions,
+  isTraced,
+  setGlobalTracer,
   Traced,
   traced,
   withTrace,
-  setGlobalTracer,
-  getGlobalTracer,
-  getTracedOptions,
-  getTracedMetadata,
-  isTraced,
 } from './traced.js';
-import { createTracer, memoryExporter, type Tracer } from '../observability/tracing.js';
 
 describe('Traced', () => {
   let tracer: Tracer & { exporter: ReturnType<typeof memoryExporter> };
@@ -196,9 +196,7 @@ describe('Traced', () => {
       }
 
       const instance = new TestClass();
-      await expect(instance.requiredMethod()).rejects.toThrow(
-        'No tracer configured',
-      );
+      await expect(instance.requiredMethod()).rejects.toThrow('No tracer configured');
     });
   });
 

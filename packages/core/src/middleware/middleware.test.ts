@@ -1,22 +1,20 @@
-import type { IncomingMessage, ServerResponse } from 'node:http';
 import { EventEmitter } from 'node:events';
+import type { IncomingMessage, ServerResponse } from 'node:http';
 import { describe, expect, it } from 'vitest';
 import {
-  MiddlewarePipeline,
   compose,
   createPipeline,
   type Middleware,
   type MiddlewareContext,
+  MiddlewarePipeline,
 } from './index.js';
 
 /**
  * Create a mock request
  */
-function createMockRequest(options: {
-  method?: string;
-  url?: string;
-  headers?: Record<string, string>;
-} = {}): IncomingMessage {
+function createMockRequest(
+  options: { method?: string; url?: string; headers?: Record<string, string> } = {},
+): IncomingMessage {
   const req = new EventEmitter() as IncomingMessage;
   req.method = options.method ?? 'GET';
   req.url = options.url ?? '/';
@@ -323,11 +321,11 @@ describe('MiddlewareContext', () => {
     await pipeline.execute(req, res, 'session-123', { data: 'test' }, async () => {});
 
     expect(capturedCtx).toBeDefined();
-    expect(capturedCtx!.path).toBe('/api/users');
-    expect(capturedCtx!.method).toBe('GET');
-    expect(capturedCtx!.sessionId).toBe('session-123');
-    expect(capturedCtx!.body).toEqual({ data: 'test' });
-    expect(capturedCtx!.url.searchParams.get('page')).toBe('1');
-    expect(capturedCtx!.url.searchParams.get('limit')).toBe('10');
+    expect(capturedCtx?.path).toBe('/api/users');
+    expect(capturedCtx?.method).toBe('GET');
+    expect(capturedCtx?.sessionId).toBe('session-123');
+    expect(capturedCtx?.body).toEqual({ data: 'test' });
+    expect(capturedCtx?.url.searchParams.get('page')).toBe('1');
+    expect(capturedCtx?.url.searchParams.get('limit')).toBe('10');
   });
 });

@@ -141,10 +141,10 @@ export function composeServers(
   for (const serverEntry of options.servers) {
     const { instance, toolPrefix = '', resourcePrefix = '', promptPrefix = '' } = serverEntry;
     const prototype = Object.getPrototypeOf(instance);
-    const constructor = prototype.constructor;
+    const ctor = prototype.constructor;
 
     // Get server options if decorated with @MCPServer
-    const serverOpts = MetadataStorage.getServerOptions(constructor);
+    const serverOpts = MetadataStorage.getServerOptions(ctor);
     if (serverOpts) {
       // Collect hooks from each server
       if (serverOpts.hooks) {
@@ -186,7 +186,9 @@ export function composeServers(
     for (const prompt of prompts) {
       allPrompts.push({
         ...prompt,
-        name: prompt.name ? `${promptPrefix}${prompt.name}` : `${promptPrefix}${String(prompt.propertyKey)}`,
+        name: prompt.name
+          ? `${promptPrefix}${prompt.name}`
+          : `${promptPrefix}${String(prompt.propertyKey)}`,
       });
     }
   }
@@ -239,10 +241,8 @@ function mergeHooksForComposition(hooksList: Partial<ServerHooks>[]): ServerHook
       .filter((h): h is NonNullable<typeof h> => h !== undefined);
 
     if (handlers.length > 0) {
-      // biome-ignore lint/suspicious/noExplicitAny: Generic hook merging requires any
       (merged as any)[hookName] = async (...args: unknown[]) => {
         for (const handler of handlers) {
-          // biome-ignore lint/suspicious/noExplicitAny: Generic hook invocation
           await (handler as any)(...args);
         }
       };

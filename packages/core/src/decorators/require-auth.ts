@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { STATE_KEYS, type AuthContext } from '../middleware/types.js';
+import { type AuthContext, STATE_KEYS } from '../middleware/types.js';
 
 /**
  * Metadata key for RequireAuth options
@@ -97,10 +97,7 @@ export function RequireAuth(options: RequireAuthOptions = {}): MethodDecorator {
     const originalMethod = descriptor.value;
 
     if (typeof originalMethod === 'function') {
-      descriptor.value = async function (
-        this: unknown,
-        ...args: unknown[]
-      ): Promise<unknown> {
+      descriptor.value = async function (this: unknown, ...args: unknown[]): Promise<unknown> {
         // Try to get auth context from metadata or global context
         const authContext = getAuthContextFromRequest();
 
@@ -137,10 +134,7 @@ export function getRequireAuthMetadata(
 /**
  * Check if a method requires authentication
  */
-export function isAuthRequired(
-  target: object,
-  propertyKey: string | symbol,
-): boolean {
+export function isAuthRequired(target: object, propertyKey: string | symbol): boolean {
   return getRequireAuthOptions(target, propertyKey) !== undefined;
 }
 
@@ -150,10 +144,7 @@ export function isAuthRequired(
 export class AuthorizationError extends Error {
   readonly code: 'UNAUTHENTICATED' | 'UNAUTHORIZED';
 
-  constructor(
-    message: string,
-    code: 'UNAUTHENTICATED' | 'UNAUTHORIZED' = 'UNAUTHORIZED',
-  ) {
+  constructor(message: string, code: 'UNAUTHENTICATED' | 'UNAUTHORIZED' = 'UNAUTHORIZED') {
     super(message);
     this.name = 'AuthorizationError';
     this.code = code;
@@ -202,10 +193,7 @@ async function validateAuth(
 
   // Check if authenticated
   if (!authContext || !authContext.authenticated) {
-    throw new AuthorizationError(
-      errorMessage,
-      'UNAUTHENTICATED',
-    );
+    throw new AuthorizationError(errorMessage, 'UNAUTHENTICATED');
   }
 
   // Check roles if specified

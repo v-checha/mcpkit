@@ -72,7 +72,9 @@ export async function docsCommand(options: DocsOptions): Promise<void> {
 
     if (!serverClass) {
       console.error(chalk.red('Error: No @MCPServer decorated class found in the module.'));
-      console.log(chalk.yellow('Make sure your server class is exported and decorated with @MCPServer.'));
+      console.log(
+        chalk.yellow('Make sure your server class is exported and decorated with @MCPServer.'),
+      );
       process.exit(1);
     }
 

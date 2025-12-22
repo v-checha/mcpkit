@@ -2,18 +2,18 @@
  * Tests for @RequireAuth decorator
  */
 
-import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
-  RequireAuth,
   AuthorizationError,
   createAuthContext,
+  getAuthContext,
+  getRequireAuthMetadata,
+  getRequireAuthOptions,
+  isAuthRequired,
+  RequireAuth,
+  setAuthContext,
   unauthenticatedContext,
   withAuthContext,
-  getRequireAuthOptions,
-  getRequireAuthMetadata,
-  isAuthRequired,
-  setAuthContext,
-  getAuthContext,
 } from './require-auth.js';
 
 describe('RequireAuth', () => {
@@ -49,9 +49,8 @@ describe('RequireAuth', () => {
 
       const instance = new TestClass();
 
-      const result = await withAuthContext(
-        createAuthContext({ userId: '123' }),
-        () => instance.protectedMethod(),
+      const result = await withAuthContext(createAuthContext({ userId: '123' }), () =>
+        instance.protectedMethod(),
       );
 
       expect(result).toBe('success');
@@ -69,9 +68,8 @@ describe('RequireAuth', () => {
 
       // Should fail without admin role
       await expect(
-        withAuthContext(
-          createAuthContext({ userId: '123' }, { roles: ['user'] }),
-          () => instance.adminMethod(),
+        withAuthContext(createAuthContext({ userId: '123' }, { roles: ['user'] }), () =>
+          instance.adminMethod(),
         ),
       ).rejects.toThrow(AuthorizationError);
 
@@ -123,16 +121,12 @@ describe('RequireAuth', () => {
 
       // Should fail custom validation
       await expect(
-        withAuthContext(
-          createAuthContext('regular-user'),
-          () => instance.specialMethod(),
-        ),
+        withAuthContext(createAuthContext('regular-user'), () => instance.specialMethod()),
       ).rejects.toThrow(AuthorizationError);
 
       // Should pass custom validation
-      const result = await withAuthContext(
-        createAuthContext('special-user'),
-        () => instance.specialMethod(),
+      const result = await withAuthContext(createAuthContext('special-user'), () =>
+        instance.specialMethod(),
       );
       expect(result).toBe('special');
     });
@@ -177,10 +171,7 @@ describe('RequireAuth', () => {
         adminMethod() {}
       }
 
-      const options = getRequireAuthOptions(
-        TestClass.prototype,
-        'adminMethod',
-      );
+      const options = getRequireAuthOptions(TestClass.prototype, 'adminMethod');
       expect(options).toBeDefined();
       expect(options?.roles).toEqual(['admin']);
     });
@@ -290,9 +281,8 @@ describe('RequireAuth', () => {
       const instance = new TestClass();
 
       await expect(
-        withAuthContext(
-          createAuthContext({ userId: '123' }, { roles: ['guest'] }),
-          () => instance.staffMethod(),
+        withAuthContext(createAuthContext({ userId: '123' }, { roles: ['guest'] }), () =>
+          instance.staffMethod(),
         ),
       ).rejects.toThrow(AuthorizationError);
     });
@@ -317,9 +307,8 @@ describe('RequireAuth', () => {
 
       // Should fail async validation
       await expect(
-        withAuthContext(
-          createAuthContext({ userId: '123' }, { claims: { approved: false } }),
-          () => instance.approvedMethod(),
+        withAuthContext(createAuthContext({ userId: '123' }, { claims: { approved: false } }), () =>
+          instance.approvedMethod(),
         ),
       ).rejects.toThrow(AuthorizationError);
 

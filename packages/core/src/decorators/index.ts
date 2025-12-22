@@ -25,7 +25,7 @@ export {
   isTraced,
   setGlobalTracer,
   Traced,
-  traced,
   type TracedOptions,
+  traced,
   withTrace,
 } from './traced.js';

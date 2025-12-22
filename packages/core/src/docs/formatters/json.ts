@@ -21,29 +21,23 @@ function filterDoc(doc: ServerDoc, options: DocGeneratorOptions): ServerDoc {
   if (options.filterTags && options.filterTags.length > 0) {
     const tags = new Set(options.filterTags);
 
-    filtered.tools = filtered.tools.filter(
-      (t) => t.tags?.some((tag) => tags.has(tag)),
-    );
-    filtered.resources = filtered.resources.filter(
-      (r) => r.tags?.some((tag) => tags.has(tag)),
-    );
-    filtered.prompts = filtered.prompts.filter(
-      (p) => p.tags?.some((tag) => tags.has(tag)),
-    );
+    filtered.tools = filtered.tools.filter((t) => t.tags?.some((tag) => tags.has(tag)));
+    filtered.resources = filtered.resources.filter((r) => r.tags?.some((tag) => tags.has(tag)));
+    filtered.prompts = filtered.prompts.filter((p) => p.tags?.some((tag) => tags.has(tag)));
   }
 
   // Remove examples if not included
   if (!options.includeExamples) {
     filtered.tools = filtered.tools.map((t) => {
-      const { examples, ...rest } = t;
+      const { examples: _examples, ...rest } = t;
       return rest;
     });
     filtered.resources = filtered.resources.map((r) => {
-      const { examples, ...rest } = r;
+      const { examples: _examples, ...rest } = r;
       return rest;
     });
     filtered.prompts = filtered.prompts.map((p) => {
-      const { examples, ...rest } = p;
+      const { examples: _examples, ...rest } = p;
       return rest;
     });
   }
@@ -65,10 +59,7 @@ function filterDoc(doc: ServerDoc, options: DocGeneratorOptions): ServerDoc {
  * console.log(result.content); // JSON string
  * ```
  */
-export function formatJson(
-  doc: ServerDoc,
-  options: DocGeneratorOptions = {},
-): DocGeneratorResult {
+export function formatJson(doc: ServerDoc, options: DocGeneratorOptions = {}): DocGeneratorResult {
   const filtered = filterDoc(doc, {
     includeExamples: options.includeExamples ?? true,
     includeDeprecated: options.includeDeprecated ?? true,

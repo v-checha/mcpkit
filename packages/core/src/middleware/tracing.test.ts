@@ -1,13 +1,11 @@
-import { describe, expect, it, vi, beforeEach } from 'vitest';
 import type { IncomingMessage, ServerResponse } from 'node:http';
+import { describe, expect, it, vi } from 'vitest';
 import {
-  tracing,
   advancedTracing,
   getCorrelationId,
   getTraceContext,
   TraceContext,
-  CORRELATION_ID_KEY,
-  TRACE_CONTEXT_KEY,
+  tracing,
 } from './tracing.js';
 import type { MiddlewareContext } from './types.js';
 
@@ -18,9 +16,7 @@ describe('Tracing Middleware', () => {
 
     return {
       request: {
-        headers: Object.fromEntries(
-          Object.entries(headers).map(([k, v]) => [k.toLowerCase(), v])
-        ),
+        headers: Object.fromEntries(Object.entries(headers).map(([k, v]) => [k.toLowerCase(), v])),
       } as unknown as IncomingMessage,
       response: {
         setHeader: vi.fn(),
@@ -31,7 +27,9 @@ describe('Tracing Middleware', () => {
       path: '/test',
       state,
       get: <T>(key: string) => state.get(key) as T | undefined,
-      set: <T>(key: string, value: T) => { state.set(key, value); },
+      set: <T>(key: string, value: T) => {
+        state.set(key, value);
+      },
     };
   }
 
@@ -63,10 +61,7 @@ describe('Tracing Middleware', () => {
 
       await middleware(ctx, async () => {});
 
-      expect(ctx.response.setHeader).toHaveBeenCalledWith(
-        'x-correlation-id',
-        expect.any(String)
-      );
+      expect(ctx.response.setHeader).toHaveBeenCalledWith('x-correlation-id', expect.any(String));
     });
 
     it('should not add to response when disabled', async () => {
@@ -197,9 +192,7 @@ describe('Tracing Middleware', () => {
       ctx.startSpan('operation');
       ctx.endSpan();
 
-      expect(onSpanEnd).toHaveBeenCalledWith(
-        expect.objectContaining({ name: 'operation' })
-      );
+      expect(onSpanEnd).toHaveBeenCalledWith(expect.objectContaining({ name: 'operation' }));
     });
   });
 
@@ -235,7 +228,7 @@ describe('Tracing Middleware', () => {
       await expect(
         middleware(ctx, async () => {
           throw new Error('Request failed');
-        })
+        }),
       ).rejects.toThrow('Request failed');
 
       const traceCtx = getTraceContext(ctx);

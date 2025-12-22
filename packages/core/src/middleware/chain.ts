@@ -41,10 +41,7 @@ export interface ConditionalOptions {
  * );
  * ```
  */
-export function conditional(
-  middleware: Middleware,
-  options: ConditionalOptions,
-): Middleware {
+export function conditional(middleware: Middleware, options: ConditionalOptions): Middleware {
   return async (ctx, next) => {
     const shouldRun = await options.when(ctx);
 
@@ -97,10 +94,7 @@ export interface TimeoutOptions {
  * );
  * ```
  */
-export function withTimeout(
-  middleware: Middleware,
-  options: TimeoutOptions,
-): Middleware {
+export function withTimeout(middleware: Middleware, options: TimeoutOptions): Middleware {
   return async (ctx, next) => {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), options.ms);
@@ -211,9 +205,7 @@ export function withErrorHandler(
       // Default error response
       if (!ctx.response.headersSent) {
         const statusCode = options.statusCode ?? 500;
-        const body = options.formatError
-          ? options.formatError(err)
-          : { error: err.message };
+        const body = options.formatError ? options.formatError(err) : { error: err.message };
 
         ctx.response.writeHead(statusCode, { 'Content-Type': 'application/json' });
         ctx.response.end(JSON.stringify(body));
@@ -276,10 +268,7 @@ export interface RetryOptions {
  * );
  * ```
  */
-export function withRetry(
-  middleware: Middleware,
-  options: RetryOptions = {},
-): Middleware {
+export function withRetry(middleware: Middleware, options: RetryOptions = {}): Middleware {
   const {
     attempts = 3,
     delay = 1000,
@@ -356,9 +345,7 @@ export interface MiddlewareGroupOptions {
  * });
  * ```
  */
-export function createMiddlewareGroup(
-  options: MiddlewareGroupOptions,
-): NamedMiddleware {
+export function createMiddlewareGroup(options: MiddlewareGroupOptions): NamedMiddleware {
   return {
     name: options.name,
     handler: composeMiddleware(options.middleware),
@@ -437,10 +424,7 @@ export interface MiddlewareHooksOptions {
  * );
  * ```
  */
-export function withHooks(
-  middleware: Middleware,
-  hooks: MiddlewareHooksOptions,
-): Middleware {
+export function withHooks(middleware: Middleware, hooks: MiddlewareHooksOptions): Middleware {
   return async (ctx, next) => {
     try {
       if (hooks.before) {
@@ -484,9 +468,7 @@ export function withHooks(
 export function parallelMiddleware(middleware: Middleware[]): Middleware {
   return async (ctx, next) => {
     // Run all middleware in parallel, each with its own next
-    await Promise.all(
-      middleware.map((mw) => mw(ctx, async () => {})),
-    );
+    await Promise.all(middleware.map((mw) => mw(ctx, async () => {})));
 
     // All completed, continue chain
     await next();
@@ -561,10 +543,7 @@ export interface CacheOptions {
  * Note: This caches whether middleware was run successfully,
  * not the response content. Useful for expensive validation/auth checks.
  */
-export function withCache(
-  middleware: Middleware,
-  options: CacheOptions,
-): Middleware {
+export function withCache(middleware: Middleware, options: CacheOptions): Middleware {
   const cache = new Map<string, { timestamp: number }>();
   const { ttl = 60000, maxSize = 1000 } = options;
 
@@ -586,8 +565,7 @@ export function withCache(
     // Update cache
     if (cache.size >= maxSize) {
       // Remove oldest entries
-      const entries = Array.from(cache.entries())
-        .sort((a, b) => a[1].timestamp - b[1].timestamp);
+      const entries = Array.from(cache.entries()).sort((a, b) => a[1].timestamp - b[1].timestamp);
       const toRemove = entries.slice(0, Math.floor(maxSize / 4));
       for (const [k] of toRemove) {
         cache.delete(k);

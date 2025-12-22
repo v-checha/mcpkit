@@ -33,6 +33,6 @@
  * @packageDocumentation
  */
 
-export { apiKeyAuth, type ApiKeyAuthOptions } from './api-key.js';
-export { bearerAuth, type BearerAuthOptions, type BearerValidationResult } from './bearer.js';
-export { createJwt, jwtAuth, type JwtAuthOptions, type JwtPayload } from './jwt.js';
+export { type ApiKeyAuthOptions, apiKeyAuth } from './api-key.js';
+export { type BearerAuthOptions, type BearerValidationResult, bearerAuth } from './bearer.js';
+export { createJwt, type JwtAuthOptions, type JwtPayload, jwtAuth } from './jwt.js';

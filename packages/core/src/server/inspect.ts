@@ -7,8 +7,8 @@
 
 import type { IncomingMessage, ServerResponse } from 'node:http';
 import { extractServerDoc } from '../docs/extractor.js';
-import type { Constructor } from '../metadata/index.js';
 import type { ServerDoc } from '../docs/types.js';
+import type { Constructor } from '../metadata/index.js';
 
 /**
  * Server statistics
@@ -71,11 +71,14 @@ export interface HealthCheckResult {
   /**
    * Detailed checks
    */
-  checks: Record<string, {
-    status: HealthStatus;
-    message?: string;
-    responseTime?: number;
-  }>;
+  checks: Record<
+    string,
+    {
+      status: HealthStatus;
+      message?: string;
+      responseTime?: number;
+    }
+  >;
 
   /**
    * Timestamp
@@ -226,9 +229,10 @@ export class ServerInspector {
    * Get current statistics
    */
   getStats(): ServerStats {
-    const avgResponseTime = this.responseTimes.length > 0
-      ? this.responseTimes.reduce((a, b) => a + b, 0) / this.responseTimes.length
-      : 0;
+    const avgResponseTime =
+      this.responseTimes.length > 0
+        ? this.responseTimes.reduce((a, b) => a + b, 0) / this.responseTimes.length
+        : 0;
 
     return {
       startTime: this.startTime,
@@ -250,15 +254,16 @@ export class ServerInspector {
 
     // Built-in checks
     const uptimeCheck = this.startTime
-      ? { status: 'healthy' as HealthStatus, message: `Uptime: ${Math.round((Date.now() - this.startTime.getTime()) / 1000)}s` }
+      ? {
+          status: 'healthy' as HealthStatus,
+          message: `Uptime: ${Math.round((Date.now() - this.startTime.getTime()) / 1000)}s`,
+        }
       : { status: 'unhealthy' as HealthStatus, message: 'Server not started' };
 
     checks.uptime = uptimeCheck;
 
     // Error rate check
-    const errorRate = this.totalRequests > 0
-      ? (this.errorCount / this.totalRequests) * 100
-      : 0;
+    const errorRate = this.totalRequests > 0 ? (this.errorCount / this.totalRequests) * 100 : 0;
 
     if (errorRate > 50) {
       checks.errorRate = { status: 'unhealthy', message: `Error rate: ${errorRate.toFixed(1)}%` };
@@ -358,7 +363,8 @@ export class ServerInspector {
       } else if (subPath === '/health') {
         // Health check only
         const health = await this.runHealthChecks();
-        const statusCode = health.status === 'healthy' ? 200 : health.status === 'degraded' ? 200 : 503;
+        const statusCode =
+          health.status === 'healthy' ? 200 : health.status === 'degraded' ? 200 : 503;
         res.writeHead(statusCode, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify(health, null, 2));
       } else if (subPath === '/stats') {
@@ -370,23 +376,35 @@ export class ServerInspector {
         // Server capabilities only
         const server = extractServerDoc(this.serverClass);
         res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({
-          name: server.name,
-          version: server.version,
-          description: server.description,
-          tools: server.tools.map((t) => ({ name: t.name, description: t.description })),
-          resources: server.resources.map((r) => ({ name: r.name, uri: r.uri, description: r.description })),
-          prompts: server.prompts.map((p) => ({ name: p.name, description: p.description })),
-        }, null, 2));
+        res.end(
+          JSON.stringify(
+            {
+              name: server.name,
+              version: server.version,
+              description: server.description,
+              tools: server.tools.map((t) => ({ name: t.name, description: t.description })),
+              resources: server.resources.map((r) => ({
+                name: r.name,
+                uri: r.uri,
+                description: r.description,
+              })),
+              prompts: server.prompts.map((p) => ({ name: p.name, description: p.description })),
+            },
+            null,
+            2,
+          ),
+        );
       } else {
         res.writeHead(404, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ error: 'Not found' }));
       }
     } catch (error) {
       res.writeHead(500, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({
-        error: error instanceof Error ? error.message : 'Internal error',
-      }));
+      res.end(
+        JSON.stringify({
+          error: error instanceof Error ? error.message : 'Internal error',
+        }),
+      );
     }
 
     return true;

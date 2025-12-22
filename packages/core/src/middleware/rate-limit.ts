@@ -48,10 +48,7 @@ export class MemoryRateLimitStore implements RateLimitStore {
     this.cleanupInterval.unref();
   }
 
-  async increment(
-    key: string,
-    windowMs: number,
-  ): Promise<{ count: number; resetTime: number }> {
+  async increment(key: string, windowMs: number): Promise<{ count: number; resetTime: number }> {
     const now = Date.now();
     const existing = this.windows.get(key);
 
@@ -199,7 +196,7 @@ function getClientIp(ctx: MiddlewareContext): string {
 
   const realIp = headers['x-real-ip'];
   if (realIp) {
-    return Array.isArray(realIp) ? realIp[0] ?? 'unknown' : realIp;
+    return Array.isArray(realIp) ? (realIp[0] ?? 'unknown') : realIp;
   }
 
   // Fall back to socket remote address
@@ -223,11 +220,7 @@ function shouldSkip(path: string, skipPaths?: string[]): boolean {
 /**
  * Default rate limited handler
  */
-function defaultOnRateLimited(
-  ctx: MiddlewareContext,
-  info: RateLimitInfo,
-  message: string,
-): void {
+function defaultOnRateLimited(ctx: MiddlewareContext, info: RateLimitInfo, message: string): void {
   const { response } = ctx;
   const retryAfter = Math.ceil((info.resetTime - Date.now()) / 1000);
 

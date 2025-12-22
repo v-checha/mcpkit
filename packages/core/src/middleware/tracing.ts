@@ -311,9 +311,11 @@ export function getTraceContext(ctx: MiddlewareContext): TraceContext | undefine
  * });
  * ```
  */
-export function advancedTracing(options: TracingOptions & {
-  onSpanEnd?: (span: TraceSpan) => void;
-} = {}): Middleware {
+export function advancedTracing(
+  options: TracingOptions & {
+    onSpanEnd?: (span: TraceSpan) => void;
+  } = {},
+): Middleware {
   const baseMiddleware = tracing(options);
 
   return async function advancedTracingMiddleware(

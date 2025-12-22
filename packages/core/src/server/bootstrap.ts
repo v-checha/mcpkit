@@ -137,10 +137,8 @@ function mergeHooks(...hookSources: (Partial<ServerHooks> | undefined)[]): Serve
       .filter((h): h is NonNullable<typeof h> => h !== undefined);
 
     if (handlers.length > 0) {
-      // biome-ignore lint/suspicious/noExplicitAny: Generic hook merging requires any
       (merged as any)[hookName] = async (...args: unknown[]) => {
         for (const handler of handlers) {
-          // biome-ignore lint/suspicious/noExplicitAny: Generic hook invocation
           await (handler as any)(...args);
         }
       };
@@ -261,10 +259,7 @@ export async function bootstrapServer(
   const mergedHooks = mergeHooks(options.hooks, ...pluginHooks);
 
   // Combine server middleware with plugin middleware
-  const combinedMiddleware = [
-    ...(options.middleware ?? []),
-    ...pluginMiddleware,
-  ];
+  const combinedMiddleware = [...(options.middleware ?? []), ...pluginMiddleware];
 
   // Create MCP server instance
   const server = new McpServer(

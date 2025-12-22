@@ -27,6 +27,12 @@
 // Re-export reflect-metadata for convenience
 import 'reflect-metadata';
 
+export type {
+  DebugContext,
+  DebugLevel,
+  DebugLogger,
+  DebugOptions,
+} from './decorators/debug.js';
 // Debug decorator
 export {
   configureDebug,
@@ -34,13 +40,6 @@ export {
   getDebugConfig,
   getDebugOptions,
   isDebugEnabled,
-} from './decorators/debug.js';
-
-export type {
-  DebugContext,
-  DebugLevel,
-  DebugLogger,
-  DebugOptions,
 } from './decorators/debug.js';
 
 // Documentation decorators
@@ -62,20 +61,6 @@ export {
   Prompt,
   type PromptDecoratorOptions,
 } from './decorators/prompt.js';
-export {
-  Resource,
-  type ResourceDecoratorOptions,
-} from './decorators/resource.js';
-// Decorators
-export {
-  MCPServer,
-  type MCPServerDecoratorOptions,
-} from './decorators/server.js';
-export {
-  Tool,
-  type ToolAnnotations,
-  type ToolDecoratorOptions,
-} from './decorators/tool.js';
 // RequireAuth decorator
 export {
   AUTH_STATE_KEY,
@@ -91,6 +76,20 @@ export {
   unauthenticatedContext,
   withAuthContext,
 } from './decorators/require-auth.js';
+export {
+  Resource,
+  type ResourceDecoratorOptions,
+} from './decorators/resource.js';
+// Decorators
+export {
+  MCPServer,
+  type MCPServerDecoratorOptions,
+} from './decorators/server.js';
+export {
+  Tool,
+  type ToolAnnotations,
+  type ToolDecoratorOptions,
+} from './decorators/tool.js';
 // Traced decorator
 export {
   getGlobalTracer,
@@ -99,10 +98,31 @@ export {
   isTraced,
   setGlobalTracer,
   Traced,
-  traced,
   type TracedOptions,
+  traced,
   withTrace,
 } from './decorators/traced.js';
+export type {
+  DocFormat,
+  DocGeneratorOptions,
+  DocGeneratorResult,
+  ParamDoc,
+  PromptDoc,
+  ResourceDoc,
+  ServerDoc,
+  ToolDoc,
+} from './docs/index.js';
+// Documentation generator
+export {
+  DocGenerator,
+  extractDocs,
+  extractServerDoc,
+  extractServerDocFromInstance,
+  formatJson,
+  formatMarkdown,
+  formatOpenAPI,
+  generateDocs,
+} from './docs/index.js';
 // Errors
 export {
   BootstrapError,
@@ -124,44 +144,6 @@ export {
   type ServerOptionsMetadata,
   type ToolMetadata,
 } from './metadata/index.js';
-// Middleware (HTTP transports)
-export {
-  // Auth
-  apiKeyAuth,
-  bearerAuth,
-  createJwt,
-  jwtAuth,
-  // Pipeline
-  compose,
-  createPipeline,
-  isNamedMiddleware,
-  MiddlewarePipeline,
-  // Rate limiting
-  MemoryRateLimitStore,
-  rateLimit,
-  // Tracing
-  advancedTracing,
-  CORRELATION_ID_KEY,
-  getCorrelationId,
-  getTraceContext,
-  TRACE_CONTEXT_KEY,
-  TraceContext,
-  tracing,
-  // Chain enhancements
-  conditional,
-  createMiddlewareGroup,
-  parallelMiddleware,
-  selectMiddleware,
-  TimeoutError,
-  withCache,
-  withErrorHandler,
-  withHooks,
-  withRetry,
-  withTimeout,
-  // Types
-  STATE_KEYS,
-} from './middleware/index.js';
-
 export type {
   ApiKeyAuthOptions,
   AuthContext,
@@ -186,151 +168,61 @@ export type {
   RateLimitStore,
   RetryOptions,
   TimeoutOptions,
-  TracingOptions,
   TraceSpan,
+  TracingOptions,
 } from './middleware/index.js';
-
-// Plugin system
+// Middleware (HTTP transports)
 export {
-  combinePlugins,
-  createPlugin,
-  createPluginRegistry,
-  definePlugin,
-  hooksPlugin,
-  middlewarePlugin,
-  PluginRegistryImpl,
-} from './plugins/index.js';
-
-export type {
-  MCPKitPlugin,
-  PluginApi,
-  PluginContext,
-  PluginFactory,
-  PluginInput,
-  PluginLifecycle,
-  PluginMeta,
-  PluginRegistry,
-  ResolvedPlugin,
-  SimplePluginOptions,
-} from './plugins/index.js';
-
-// Documentation generator
-export {
-  DocGenerator,
-  extractDocs,
-  extractServerDoc,
-  extractServerDocFromInstance,
-  formatJson,
-  formatMarkdown,
-  formatOpenAPI,
-  generateDocs,
-} from './docs/index.js';
-
-export type {
-  DocFormat,
-  DocGeneratorOptions,
-  DocGeneratorResult,
-  ParamDoc,
-  PromptDoc,
-  ResourceDoc,
-  ServerDoc,
-  ToolDoc,
-} from './docs/index.js';
-
-// Schema utilities (advanced usage)
-export {
-  buildSchemaFromParams,
-  buildToolInputSchema,
-  inferSchemaFromType,
-  zodShapeToJsonSchema,
-} from './schema/index.js';
-// Server bootstrap (advanced usage)
-export {
-  type BootstrappedServer,
-  bootstrapServer,
-  // Composition
-  combinePrompts,
-  combineResources,
-  combineTools,
-  composeServers,
-  createComposedServer,
-  // Gateway
-  createGateway,
-  MCPGateway,
-  // Inspection
-  createInspector,
-  ServerInspector,
-} from './server/index.js';
-
-export type {
-  // Composition
-  ComposedServerClass,
-  ComposedServerInstance,
-  ComposedServerMetadata,
-  ComposeOptions,
-  // Gateway
-  CircuitBreakerConfig,
-  CircuitState,
-  Gateway,
-  GatewayOptions,
-  LoadBalancingStrategy,
-  UpstreamHealth,
-  UpstreamServer,
-  // Inspection
-  HealthCheckFn,
-  HealthCheckResult,
-  HealthStatus,
-  InspectionOptions,
-  InspectionResult,
-  ServerStats,
-} from './server/index.js';
-// Transport (advanced usage)
-export {
-  createSseTransport,
-  createStdioTransport,
-  createStreamableHttpTransport,
-  SseTransport,
-  type SseTransportOptions,
-  StdioTransport,
-  StreamableHttpTransport,
-  type StreamableHttpTransportOptions,
-  type TransportKind,
-} from './transport/index.js';
-// Observability (metrics, health, tracing)
-export {
-  // Metrics
-  createMetricsCollector,
-  MetricsCollector,
-  metricsPlugin,
-  // Health
-  createHealthChecker,
-  createHealthHandler,
-  HealthChecker,
-  healthMiddleware,
-  healthPlugin,
   // Tracing
-  consoleExporter,
-  createTracer,
-  memoryExporter,
-  TracerImpl,
-  tracingPlugin,
-} from './observability/index.js';
-
+  advancedTracing,
+  // Auth
+  apiKeyAuth,
+  bearerAuth,
+  CORRELATION_ID_KEY,
+  // Pipeline
+  compose,
+  // Chain enhancements
+  conditional,
+  createJwt,
+  createMiddlewareGroup,
+  createPipeline,
+  getCorrelationId,
+  getTraceContext,
+  isNamedMiddleware,
+  jwtAuth,
+  // Rate limiting
+  MemoryRateLimitStore,
+  MiddlewarePipeline,
+  parallelMiddleware,
+  rateLimit,
+  // Types
+  STATE_KEYS,
+  selectMiddleware,
+  TimeoutError,
+  TRACE_CONTEXT_KEY,
+  TraceContext,
+  tracing,
+  withCache,
+  withErrorHandler,
+  withHooks,
+  withRetry,
+  withTimeout,
+} from './middleware/index.js';
 export type {
   // Metrics types
   Counter,
   Gauge,
+  // Health types
+  HealthCheckOptions,
+  HealthEndpointOptions,
+  HealthPluginOptions,
+  HealthResponse,
   Histogram,
   HistogramOptions,
   Metric,
   MetricLabels,
   MetricsCollectorOptions,
   MetricType,
-  // Health types
-  HealthCheckOptions,
-  HealthEndpointOptions,
-  HealthPluginOptions,
-  HealthResponse,
   // Tracing types
   Span,
   SpanAttributes,
@@ -344,6 +236,105 @@ export type {
   Tracer,
   TracerOptions,
 } from './observability/index.js';
+// Observability (metrics, health, tracing)
+export {
+  // Tracing
+  consoleExporter,
+  // Health
+  createHealthChecker,
+  createHealthHandler,
+  // Metrics
+  createMetricsCollector,
+  createTracer,
+  HealthChecker,
+  healthMiddleware,
+  healthPlugin,
+  MetricsCollector,
+  memoryExporter,
+  metricsPlugin,
+  TracerImpl,
+  tracingPlugin,
+} from './observability/index.js';
+export type {
+  MCPKitPlugin,
+  PluginApi,
+  PluginContext,
+  PluginFactory,
+  PluginInput,
+  PluginLifecycle,
+  PluginMeta,
+  PluginRegistry,
+  ResolvedPlugin,
+  SimplePluginOptions,
+} from './plugins/index.js';
+// Plugin system
+export {
+  combinePlugins,
+  createPlugin,
+  createPluginRegistry,
+  definePlugin,
+  hooksPlugin,
+  middlewarePlugin,
+  PluginRegistryImpl,
+} from './plugins/index.js';
+// Schema utilities (advanced usage)
+export {
+  buildSchemaFromParams,
+  buildToolInputSchema,
+  inferSchemaFromType,
+  zodShapeToJsonSchema,
+} from './schema/index.js';
+export type {
+  // Gateway
+  CircuitBreakerConfig,
+  CircuitState,
+  // Composition
+  ComposedServerClass,
+  ComposedServerInstance,
+  ComposedServerMetadata,
+  ComposeOptions,
+  Gateway,
+  GatewayOptions,
+  // Inspection
+  HealthCheckFn,
+  HealthCheckResult,
+  HealthStatus,
+  InspectionOptions,
+  InspectionResult,
+  LoadBalancingStrategy,
+  ServerStats,
+  UpstreamHealth,
+  UpstreamServer,
+} from './server/index.js';
+// Server bootstrap (advanced usage)
+export {
+  type BootstrappedServer,
+  bootstrapServer,
+  // Composition
+  combinePrompts,
+  combineResources,
+  combineTools,
+  composeServers,
+  createComposedServer,
+  // Gateway
+  createGateway,
+  // Inspection
+  createInspector,
+  MCPGateway,
+  ServerInspector,
+} from './server/index.js';
+// Transport (advanced usage)
+export {
+  createSseTransport,
+  createStdioTransport,
+  createStreamableHttpTransport,
+  SseTransport,
+  type SseTransportOptions,
+  StdioTransport,
+  StreamableHttpTransport,
+  type StreamableHttpTransportOptions,
+  type TransportKind,
+} from './transport/index.js';
 
 // Types
 export type {
