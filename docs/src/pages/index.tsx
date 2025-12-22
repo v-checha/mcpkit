@@ -6,8 +6,8 @@ import CodeBlock from '@theme/CodeBlock';
 
 import styles from './index.module.css';
 
-const exampleCode = `import { MCPServer, Tool, Param, listen, bootstrap } from '@mcpkit-dev/core';
-import { z } from 'zod';
+const exampleCode = `import 'reflect-metadata';
+import { createServer, MCPServer, Tool, Param } from '@mcpkit-dev/core';
 
 @MCPServer({
   name: 'my-server',
@@ -16,14 +16,15 @@ import { z } from 'zod';
 class MyServer {
   @Tool({ description: 'Add two numbers' })
   add(
-    @Param({ schema: z.number() }) a: number,
-    @Param({ schema: z.number() }) b: number
+    @Param({ name: 'a' }) a: number,
+    @Param({ name: 'b' }) b: number
   ) {
     return { result: a + b };
   }
 }
 
-listen(bootstrap(MyServer));`;
+const server = createServer(MyServer);
+await server.listen();`;
 
 function Hero() {
   return (
