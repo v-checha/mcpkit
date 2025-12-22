@@ -110,11 +110,15 @@ const config: Config = {
       copyright: `Copyright ${new Date().getFullYear()} MCPKit. Built with Docusaurus.`,
     },
     prism: {
-      theme: prismThemes.github,
-      darkTheme: prismThemes.dracula,
+      theme: prismThemes.oneLight,
+      darkTheme: prismThemes.vsDark,
       additionalLanguages: ['bash', 'typescript', 'json'],
     },
-    algolia: undefined,
+    colorMode: {
+      defaultMode: 'light',
+      disableSwitch: false,
+      respectPrefersColorScheme: true,
+    },
   } satisfies Preset.ThemeConfig,
 };
 
