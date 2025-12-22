@@ -7,7 +7,8 @@ sidebar_position: 5
 Combine multiple MCP servers into a unified API.
 
 ```typescript
-import { composeServers, createComposedServer } from '@mcpkit-dev/core';
+import 'reflect-metadata';
+import { MCPServer, Tool, Param, createComposedServer } from '@mcpkit-dev/core';
 
 // Define servers
 @MCPServer({ name: 'weather', version: '1.0.0' })

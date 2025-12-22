@@ -107,7 +107,8 @@ my-server/
     "dev": "tsx watch src/index.ts"
   },
   "dependencies": {
-    "@mcpkit-dev/core": "^1.0.0",
+    "@mcpkit-dev/core": "^2.0.0",
+    "reflect-metadata": "^0.2.0",
     "zod": "^3.0.0"
   },
   "devDependencies": {
@@ -116,3 +117,16 @@ my-server/
   }
 }
 ```
+
+:::tip Required Import
+
+Always import `reflect-metadata` at the top of your entry file before any other imports:
+
+```typescript
+import 'reflect-metadata';
+import { createServer, MCPServer, Tool, Param } from '@mcpkit-dev/core';
+```
+
+This is required for TypeScript decorators to work properly.
+
+:::

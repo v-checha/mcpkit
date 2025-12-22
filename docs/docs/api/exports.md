@@ -24,6 +24,9 @@ import {
 
   // Parameter decorators
   Param,
+
+  // Factory functions
+  createServer,
 } from '@mcpkit-dev/core';
 ```
 
@@ -128,6 +131,8 @@ import type {
   ListenOptions,
   BootstrappedServer,
   ServerHooks,
+  MCPServerInstance,
+  WithMCPServer,
 
   // Middleware types
   MiddlewareContext,

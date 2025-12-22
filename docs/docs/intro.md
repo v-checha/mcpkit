@@ -28,7 +28,8 @@ MCPKit provides a decorator-based, type-safe API for creating MCP servers that w
 ## Quick Example
 
 ```typescript
-import { MCPServer, Tool, Param } from '@mcpkit-dev/core';
+import 'reflect-metadata';
+import { createServer, MCPServer, Tool, Param } from '@mcpkit-dev/core';
 
 @MCPServer({
   name: 'my-server',
@@ -44,7 +45,7 @@ class MyServer {
 }
 
 // Start the server
-const server = new MyServer();
+const server = createServer(MyServer);
 await server.listen();
 ```
 

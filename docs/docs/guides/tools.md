@@ -11,7 +11,8 @@ Tools are the primary way to expose functionality in an MCP server. They represe
 Use the `@Tool` decorator to expose a method as a tool:
 
 ```typescript
-import { MCPServer, Tool, Param } from '@mcpkit-dev/core';
+import 'reflect-metadata';
+import { createServer, MCPServer, Tool, Param } from '@mcpkit-dev/core';
 
 @MCPServer({ name: 'my-server', version: '1.0.0' })
 class MyServer {
@@ -23,6 +24,9 @@ class MyServer {
     return a + b;
   }
 }
+
+const server = createServer(MyServer);
+await server.listen();
 ```
 
 ## Tool Options

@@ -7,9 +7,20 @@ sidebar_position: 3
 OpenTelemetry-compatible tracing for your MCP server.
 
 ```typescript
-import { createTracer, consoleExporter, tracingPlugin, Traced, setGlobalTracer } from '@mcpkit-dev/core';
+import 'reflect-metadata';
+import {
+  createServer,
+  MCPServer,
+  Tool,
+  Param,
+  Traced,
+  createTracer,
+  consoleExporter,
+  tracingPlugin,
+  setGlobalTracer,
+} from '@mcpkit-dev/core';
 
-// Setup
+// Setup global tracer
 const tracer = createTracer({
   serviceName: 'my-server',
   exporters: [consoleExporter()],
@@ -22,14 +33,17 @@ setGlobalTracer(tracer);
   version: '1.0.0',
   plugins: [tracingPlugin({ serviceName: 'my-server', exporters: [consoleExporter()] })],
 })
-class MyServer {}
-
-// Using @Traced decorator
-@Tool({ description: 'Fetch data' })
-@Traced({ name: 'data.fetch', kind: 'client', attributes: { 'db.system': 'postgresql' } })
-async fetchData(@Param({ name: 'id' }) id: string) {
-  return await db.find(id);
+class MyServer {
+  // Using @Traced decorator
+  @Tool({ description: 'Fetch data' })
+  @Traced({ name: 'data.fetch', kind: 'client', attributes: { 'db.system': 'postgresql' } })
+  async fetchData(@Param({ name: 'id' }) id: string) {
+    return await db.find(id);
+  }
 }
+
+const server = createServer(MyServer);
+await server.listen();
 
 // Manual spans
 await tracer.withSpan('my-operation', async (span) => {

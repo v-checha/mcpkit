@@ -4,7 +4,7 @@
  * @example
  * ```typescript
  * import 'reflect-metadata';
- * import { MCPServer, Tool, Param } from '@mcpkit-dev/core';
+ * import { MCPServer, Tool, Param, createServer } from '@mcpkit-dev/core';
  *
  * @MCPServer({
  *   name: 'my-server',
@@ -17,7 +17,7 @@
  *   }
  * }
  *
- * const server = new MyServer();
+ * const server = createServer(MyServer);
  * await server.listen();
  * ```
  *
@@ -82,8 +82,10 @@ export {
 } from './decorators/resource.js';
 // Decorators
 export {
+  createServer,
   MCPServer,
   type MCPServerDecoratorOptions,
+  type WithMCPServer,
 } from './decorators/server.js';
 export {
   Tool,

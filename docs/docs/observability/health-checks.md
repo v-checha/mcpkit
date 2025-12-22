@@ -7,7 +7,8 @@ sidebar_position: 2
 Kubernetes-compatible health check endpoints.
 
 ```typescript
-import { healthPlugin } from '@mcpkit-dev/core';
+import 'reflect-metadata';
+import { createServer, MCPServer, healthPlugin } from '@mcpkit-dev/core';
 
 @MCPServer({
   name: 'my-server',
@@ -22,6 +23,12 @@ import { healthPlugin } from '@mcpkit-dev/core';
   ],
 })
 class MyServer {}
+
+const server = createServer(MyServer);
+await server.listen({
+  transport: 'streamable-http',
+  port: 3000,
+});
 
 // Endpoints:
 // GET /health       - Aggregated status

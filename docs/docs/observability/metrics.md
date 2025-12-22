@@ -7,7 +7,8 @@ sidebar_position: 1
 Prometheus-compatible metrics for monitoring.
 
 ```typescript
-import { createMetricsCollector, metricsPlugin } from '@mcpkit-dev/core';
+import 'reflect-metadata';
+import { createServer, MCPServer, createMetricsCollector, metricsPlugin } from '@mcpkit-dev/core';
 
 // Using plugin
 @MCPServer({
@@ -17,7 +18,15 @@ import { createMetricsCollector, metricsPlugin } from '@mcpkit-dev/core';
 })
 class MyServer {}
 
-// Manual usage
+const server = createServer(MyServer);
+await server.listen();
+```
+
+```typescript
+// Manual usage with hooks
+import 'reflect-metadata';
+import { createServer, MCPServer, createMetricsCollector } from '@mcpkit-dev/core';
+
 const metrics = createMetricsCollector({ prefix: 'myapp_' });
 
 @MCPServer({
@@ -25,7 +34,10 @@ const metrics = createMetricsCollector({ prefix: 'myapp_' });
   version: '1.0.0',
   hooks: metrics.getHooks(),
 })
-class MyServer {}
+class MyServerWithMetrics {}
+
+const server = createServer(MyServerWithMetrics);
+await server.listen();
 
 // Expose endpoint
 app.get('/metrics', (req, res) => {

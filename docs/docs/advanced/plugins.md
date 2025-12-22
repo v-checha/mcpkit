@@ -43,7 +43,8 @@ const myPlugin = createPlugin({
 ## Built-in Plugins
 
 ```typescript
-import { metricsPlugin, healthPlugin, tracingPlugin } from '@mcpkit-dev/core';
+import 'reflect-metadata';
+import { createServer, MCPServer, metricsPlugin, healthPlugin, tracingPlugin, consoleExporter } from '@mcpkit-dev/core';
 
 @MCPServer({
   name: 'my-server',
@@ -55,4 +56,7 @@ import { metricsPlugin, healthPlugin, tracingPlugin } from '@mcpkit-dev/core';
   ],
 })
 class MyServer {}
+
+const server = createServer(MyServer);
+await server.listen();
 ```

@@ -6,6 +6,14 @@ sidebar_position: 1
 
 Middleware allows you to intercept and process HTTP requests before they reach your tools.
 
+:::caution HTTP Transport Only
+
+Middleware **only works with HTTP transports** (`streamable-http`, `sse`). It does **not** work with `stdio` transport (the default).
+
+For stdio transport (used by Claude Desktop), use [server hooks](/docs/guides/hooks) instead.
+
+:::
+
 ## Creating Middleware
 
 ```typescript

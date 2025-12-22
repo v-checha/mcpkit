@@ -11,7 +11,8 @@ Resources expose data that AI assistants can read. They're identified by URIs an
 Use the `@Resource` decorator with a URI pattern:
 
 ```typescript
-import { MCPServer, Resource } from '@mcpkit-dev/core';
+import 'reflect-metadata';
+import { createServer, MCPServer, Resource } from '@mcpkit-dev/core';
 
 @MCPServer({ name: 'docs-server', version: '1.0.0' })
 class DocsServer {
@@ -26,6 +27,9 @@ class DocsServer {
     };
   }
 }
+
+const server = createServer(DocsServer);
+await server.listen();
 ```
 
 ## Resource with Options

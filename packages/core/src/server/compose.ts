@@ -8,6 +8,8 @@ import { MetadataStorage, type ServerOptionsMetadata } from '../metadata/index.j
 import type { MiddlewareInput } from '../middleware/types.js';
 import type { PluginInput } from '../plugins/types.js';
 import type { ServerHooks } from '../types/hooks.js';
+import type { ListenOptions } from '../types/index.js';
+import { type BootstrappedServer, bootstrapServer } from './bootstrap.js';
 
 /**
  * Options for composed server
@@ -282,6 +284,7 @@ export function createComposedServer(
   class ComposedServer implements ComposedServerClass {
     readonly __composedMetadata = metadata;
     readonly __serverInstances = options.servers.map((s) => s.instance);
+    private __mcpBootstrapped: BootstrappedServer | null = null;
 
     /**
      * Get all composed server instances
@@ -302,6 +305,58 @@ export function createComposedServer(
      */
     getMetadata(): ComposedServerMetadata {
       return this.__composedMetadata;
+    }
+
+    /**
+     * Start the MCP server with the specified transport
+     *
+     * @param listenOptions - Configuration for the server transport
+     * @returns Promise that resolves when the server is connected
+     */
+    async listen(listenOptions: ListenOptions = {}): Promise<void> {
+      if (this.__mcpBootstrapped) {
+        throw new Error('Server is already running. Call close() first.');
+      }
+
+      this.__mcpBootstrapped = await bootstrapServer(this, metadata, listenOptions);
+      await this.__mcpBootstrapped.connect();
+
+      // Call onServerStart hook
+      if (metadata.hooks?.onServerStart) {
+        const promise = metadata.hooks.onServerStart();
+        if (metadata.hooks.awaitHooks !== false && promise) {
+          await promise;
+        }
+      }
+    }
+
+    /**
+     * Gracefully shut down the server
+     *
+     * @returns Promise that resolves when the server is closed
+     */
+    async close(): Promise<void> {
+      if (this.__mcpBootstrapped) {
+        await this.__mcpBootstrapped.close();
+        this.__mcpBootstrapped = null;
+
+        // Call onServerStop hook
+        if (metadata.hooks?.onServerStop) {
+          const promise = metadata.hooks.onServerStop();
+          if (metadata.hooks.awaitHooks !== false && promise) {
+            await promise;
+          }
+        }
+      }
+    }
+
+    /**
+     * Check if server is currently connected
+     *
+     * @returns true if the server is running
+     */
+    isConnected(): boolean {
+      return this.__mcpBootstrapped !== null;
     }
   }
 
@@ -329,6 +384,21 @@ export interface ComposedServerClass {
    * Get composition metadata
    */
   getMetadata(): ComposedServerMetadata;
+
+  /**
+   * Start the MCP server with the specified transport
+   */
+  listen(options?: ListenOptions): Promise<void>;
+
+  /**
+   * Gracefully shut down the server
+   */
+  close(): Promise<void>;
+
+  /**
+   * Check if server is currently connected
+   */
+  isConnected(): boolean;
 }
 
 /**

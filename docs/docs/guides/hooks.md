@@ -9,7 +9,8 @@ Hooks allow you to intercept and react to server events for logging, monitoring,
 ## Available Hooks
 
 ```typescript
-import { MCPServer, type ServerHooks } from '@mcpkit-dev/core';
+import 'reflect-metadata';
+import { createServer, MCPServer, type ServerHooks } from '@mcpkit-dev/core';
 
 @MCPServer({
   name: 'my-server',
@@ -57,6 +58,9 @@ import { MCPServer, type ServerHooks } from '@mcpkit-dev/core';
   },
 })
 class MyServer {}
+
+const server = createServer(MyServer);
+await server.listen();
 ```
 
 ## Hook Contexts

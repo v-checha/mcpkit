@@ -9,7 +9,8 @@ Prompts are reusable message templates that can be invoked by AI assistants.
 ## Basic Prompt
 
 ```typescript
-import { MCPServer, Prompt, Param } from '@mcpkit-dev/core';
+import 'reflect-metadata';
+import { createServer, MCPServer, Prompt, Param } from '@mcpkit-dev/core';
 
 @MCPServer({ name: 'writing-server', version: '1.0.0' })
 class WritingServer {
@@ -28,6 +29,9 @@ class WritingServer {
     };
   }
 }
+
+const server = createServer(WritingServer);
+await server.listen();
 ```
 
 ## Prompt Options

@@ -7,6 +7,11 @@ import type { ServerHooks } from '../types/hooks.js';
 import type { ListenOptions, MCPServerInstance } from '../types/index.js';
 
 /**
+ * Type helper that adds MCPServerInstance methods to a class type
+ */
+export type WithMCPServer<T> = T & MCPServerInstance;
+
+/**
  * Options for the @MCPServer decorator
  */
 export interface MCPServerDecoratorOptions {
@@ -223,4 +228,58 @@ export function MCPServer(
 
     return ExtendedClass as T;
   };
+}
+
+/**
+ * Create a properly typed server instance from a class decorated with @MCPServer
+ *
+ * This factory function provides correct TypeScript types for the runtime-added
+ * `listen()`, `close()`, and `isConnected()` methods without requiring manual type assertions.
+ *
+ * @param ServerClass - A class decorated with @MCPServer
+ * @param args - Constructor arguments for the server class
+ * @returns A properly typed server instance with MCPServerInstance methods
+ *
+ * @example
+ * ```typescript
+ * import 'reflect-metadata';
+ * import { MCPServer, Tool, Param, createServer } from '@mcpkit-dev/core';
+ *
+ * @MCPServer({ name: 'my-server', version: '1.0.0' })
+ * class MyServer {
+ *   @Tool({ description: 'Add two numbers' })
+ *   async add(
+ *     @Param({ name: 'a', description: 'First number' }) a: number,
+ *     @Param({ name: 'b', description: 'Second number' }) b: number
+ *   ): Promise<number> {
+ *     return a + b;
+ *   }
+ * }
+ *
+ * // Creates a properly typed server instance - no type assertions needed!
+ * const server = createServer(MyServer);
+ * await server.listen();
+ * ```
+ *
+ * @example With constructor arguments
+ * ```typescript
+ * @MCPServer({ name: 'configurable-server', version: '1.0.0' })
+ * class ConfigurableServer {
+ *   constructor(private config: { apiKey: string }) {}
+ *
+ *   @Tool({ description: 'Get API key' })
+ *   async getApiKey(): Promise<string> {
+ *     return this.config.apiKey;
+ *   }
+ * }
+ *
+ * const server = createServer(ConfigurableServer, { apiKey: 'secret' });
+ * await server.listen();
+ * ```
+ */
+export function createServer<T extends new (...args: any[]) => object>(
+  ServerClass: T,
+  ...args: ConstructorParameters<T>
+): WithMCPServer<InstanceType<T>> {
+  return new ServerClass(...args) as WithMCPServer<InstanceType<T>>;
 }

@@ -11,7 +11,8 @@ Let's build a simple MCP server that provides weather information.
 Create a new file `server.ts`:
 
 ```typescript
-import { MCPServer, Tool, Resource, Prompt, Param } from '@mcpkit-dev/core';
+import 'reflect-metadata';
+import { createServer, MCPServer, Tool, Resource, Prompt, Param } from '@mcpkit-dev/core';
 
 @MCPServer({
   name: 'weather-server',
@@ -61,7 +62,101 @@ class WeatherServer {
 }
 
 // Start the server
-const server = new WeatherServer();
+const server = createServer(WeatherServer);
+await server.listen();
+```
+
+## Understanding Server Instantiation
+
+The `@MCPServer` decorator adds `listen()`, `close()`, and `isConnected()` methods to your class at runtime. Since TypeScript doesn't know about these runtime-added methods, we provide several ways to get proper typing:
+
+### Option 1: `createServer` Factory (Recommended)
+
+The simplest approach - use the `createServer` factory function:
+
+```typescript
+import { createServer, MCPServer, Tool, Param } from '@mcpkit-dev/core';
+
+@MCPServer({ name: 'my-server', version: '1.0.0' })
+class MyServer {
+  @Tool({ description: 'Add numbers' })
+  async add(
+    @Param({ name: 'a' }) a: number,
+    @Param({ name: 'b' }) b: number
+  ): Promise<number> {
+    return a + b;
+  }
+}
+
+// Properly typed - no type assertions needed!
+const server = createServer(MyServer);
+await server.listen();
+```
+
+If your server class has constructor parameters:
+
+```typescript
+@MCPServer({ name: 'configurable-server', version: '1.0.0' })
+class ConfigurableServer {
+  constructor(private config: { apiKey: string }) {}
+
+  @Tool({ description: 'Get API key' })
+  async getApiKey(): Promise<string> {
+    return this.config.apiKey;
+  }
+}
+
+// Pass constructor arguments after the class
+const server = createServer(ConfigurableServer, { apiKey: 'secret' });
+await server.listen();
+```
+
+### Option 2: Declaration Merging
+
+Use TypeScript's declaration merging to extend your class interface:
+
+```typescript
+import 'reflect-metadata';
+import { MCPServer, Tool, Param, type MCPServerInstance } from '@mcpkit-dev/core';
+
+@MCPServer({ name: 'my-server', version: '1.0.0' })
+class MyServer {
+  @Tool({ description: 'Add numbers' })
+  async add(
+    @Param({ name: 'a' }) a: number,
+    @Param({ name: 'b' }) b: number
+  ): Promise<number> {
+    return a + b;
+  }
+}
+
+// Declaration merging - tells TypeScript about runtime methods
+interface MyServer extends MCPServerInstance {}
+
+const server = new MyServer();
+await server.listen(); // TypeScript knows about listen()
+```
+
+### Option 3: Type Assertion
+
+Use a type assertion when instantiating:
+
+```typescript
+import 'reflect-metadata';
+import { MCPServer, Tool, Param, type MCPServerInstance } from '@mcpkit-dev/core';
+
+@MCPServer({ name: 'my-server', version: '1.0.0' })
+class MyServer {
+  @Tool({ description: 'Add numbers' })
+  async add(
+    @Param({ name: 'a' }) a: number,
+    @Param({ name: 'b' }) b: number
+  ): Promise<number> {
+    return a + b;
+  }
+}
+
+const server = new MyServer() as MyServer & MCPServerInstance;
 await server.listen();
 ```
 

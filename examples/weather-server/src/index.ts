@@ -15,7 +15,7 @@
  * }
  */
 import 'reflect-metadata';
-import { MCPServer, Param, Prompt, Resource, Tool } from '@mcpkit-dev/core';
+import { createServer, MCPServer, Param, Prompt, Resource, Tool } from '@mcpkit-dev/core';
 import { z } from 'zod';
 
 // Type definitions for weather data
@@ -350,13 +350,8 @@ Make it conversational and include suggestions for activities based on the weath
   }
 }
 
-// Create and start the server
-// Note: @MCPServer decorator adds listen(), close(), and isConnected() methods
-const server = new WeatherServer() as WeatherServer & {
-  listen(): Promise<void>;
-  close(): Promise<void>;
-  isConnected(): boolean;
-};
+// Create and start the server using the createServer factory for proper typing
+const server = createServer(WeatherServer);
 
 server
   .listen()

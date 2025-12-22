@@ -6,6 +6,14 @@ sidebar_position: 2
 
 MCPKit provides built-in authentication middleware for HTTP transports.
 
+:::caution HTTP Transport Only
+
+Authentication middleware (`apiKeyAuth`, `jwtAuth`, `bearerAuth`) **only works with HTTP transports** (`streamable-http`, `sse`). It does **not** work with `stdio` transport (the default).
+
+For stdio transport, the `@RequireAuth` decorator still works but requires you to set auth context manually via hooks.
+
+:::
+
 ## API Key Authentication
 
 ```typescript

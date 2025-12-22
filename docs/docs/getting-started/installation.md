@@ -34,26 +34,34 @@ The CLI creates a project with:
 If you prefer to add MCPKit to an existing project:
 
 ```bash
-npm install @mcpkit-dev/core zod
+npm install @mcpkit-dev/core reflect-metadata zod
 ```
 
 Or with your preferred package manager:
 
 ```bash
 # yarn
-yarn add @mcpkit-dev/core zod
+yarn add @mcpkit-dev/core reflect-metadata zod
 
 # pnpm
-pnpm add @mcpkit-dev/core zod
+pnpm add @mcpkit-dev/core reflect-metadata zod
 ```
 
-### Peer Dependencies
+### Required Dependencies
 
-MCPKit uses [Zod](https://zod.dev) for runtime validation. While not strictly required, it's highly recommended for defining tool schemas.
+- **reflect-metadata** - Required for TypeScript decorator metadata
+- **zod** - Recommended for runtime validation and schema definitions
 
-```bash
-npm install zod
+:::tip Important
+
+Always import `reflect-metadata` at the top of your entry file:
+
+```typescript
+import 'reflect-metadata';
+import { createServer, MCPServer } from '@mcpkit-dev/core';
 ```
+
+:::
 
 ## Development Dependencies
 

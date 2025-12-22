@@ -34,6 +34,66 @@ interface ServerHooks {
 }
 ```
 
+## Server Instance Types
+
+```typescript
+/**
+ * Interface for runtime methods added by @MCPServer decorator
+ */
+interface MCPServerInstance {
+  listen(options?: ListenOptions): Promise<void>;
+  close(): Promise<void>;
+  isConnected(): boolean;
+}
+
+/**
+ * Type helper that combines a class type with MCPServerInstance
+ * Used by createServer() to return properly typed instances
+ */
+type WithMCPServer<T> = T & MCPServerInstance;
+```
+
+### Usage with `createServer`
+
+```typescript
+import { createServer, MCPServer, Tool } from '@mcpkit-dev/core';
+
+@MCPServer({ name: 'my-server', version: '1.0.0' })
+class MyServer {
+  @Tool({ description: 'Hello' })
+  async hello(): Promise<string> {
+    return 'Hello!';
+  }
+}
+
+// createServer returns WithMCPServer<MyServer>
+const server = createServer(MyServer);
+
+// All methods are properly typed
+await server.listen();           // MCPServerInstance method
+await server.hello();            // MyServer method
+console.log(server.isConnected()); // MCPServerInstance method
+await server.close();            // MCPServerInstance method
+```
+
+### Usage with Declaration Merging
+
+```typescript
+import 'reflect-metadata';
+import { MCPServer, type MCPServerInstance } from '@mcpkit-dev/core';
+
+@MCPServer({ name: 'my-server', version: '1.0.0' })
+class MyServer {
+  // ... your tools
+}
+
+// Declaration merging adds MCPServerInstance methods to MyServer type
+interface MyServer extends MCPServerInstance {}
+
+const server = new MyServer();
+await server.listen(); // TypeScript knows about this
+```
+
 ## Middleware Types
 
 ```typescript
