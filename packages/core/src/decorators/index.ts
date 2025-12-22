@@ -16,7 +16,12 @@ export {
   withAuthContext,
 } from './require-auth.js';
 export { Resource, type ResourceDecoratorOptions } from './resource.js';
-export { createServer, MCPServer, type MCPServerDecoratorOptions, type WithMCPServer } from './server.js';
+export {
+  createServer,
+  MCPServer,
+  type MCPServerDecoratorOptions,
+  type WithMCPServer,
+} from './server.js';
 export { Tool, type ToolAnnotations, type ToolDecoratorOptions } from './tool.js';
 export {
   getGlobalTracer,
