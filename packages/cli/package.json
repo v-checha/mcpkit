@@ -1,6 +1,6 @@
 {
   "name": "@mcpkit-dev/cli",
-  "version": "1.5.0",
+  "version": "2.0.0",
   "description": "CLI tool for creating and managing mcpkit MCP servers",
   "type": "module",
   "bin": {
