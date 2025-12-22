@@ -309,7 +309,7 @@ const listenOptions: ListenOptions = {
   console.error('Server running at http://localhost:3000');`;
 
   return `import 'reflect-metadata';
-import { MCPServer, Tool, Resource, Prompt, Param, type MCPServerInstance } from '@mcpkit-dev/core';${transportImport}
+import { createServer, MCPServer, Tool, Resource, Prompt, Param } from '@mcpkit-dev/core';${transportImport}
 
 /**
  * ${config.description}
@@ -377,12 +377,10 @@ class Server {
   }
 }
 
-// Declaration merging to add MCPServerInstance methods to Server type
-interface Server extends MCPServerInstance {}
 ${transportOptions}
 
 // Create and start the server
-const server = new Server();
+const server = createServer(Server);
 ${listenCall}${serverUrl}
 `;
 }
