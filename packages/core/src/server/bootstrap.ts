@@ -11,6 +11,7 @@ import {
   type ServerOptionsMetadata,
   type ToolMetadata,
 } from '../metadata/index.js';
+import { createPluginRegistry, type PluginRegistryImpl } from '../plugins/index.js';
 import { buildSchemaFromParams } from '../schema/index.js';
 import { SseTransport, StreamableHttpTransport } from '../transport/index.js';
 import type {
@@ -96,10 +97,60 @@ export interface BootstrappedServer {
   server: McpServer;
   /** The transport being used */
   transport: Transport;
+  /** Plugin registry (if plugins are configured) */
+  pluginRegistry?: PluginRegistryImpl;
   /** Connect and start the server */
   connect: () => Promise<void>;
   /** Close the server */
   close: () => Promise<void>;
+}
+
+/**
+ * Merge multiple hook objects into a single combined hooks object
+ * Calls all hooks in order when triggered
+ */
+function mergeHooks(...hookSources: (Partial<ServerHooks> | undefined)[]): ServerHooks | undefined {
+  const sources = hookSources.filter((h): h is Partial<ServerHooks> => h !== undefined);
+  if (sources.length === 0) return undefined;
+  if (sources.length === 1) return sources[0] as ServerHooks;
+
+  const merged: Partial<ServerHooks> = {};
+
+  // List of hook names to merge
+  const hookNames: (keyof ServerHooks)[] = [
+    'onServerStart',
+    'onServerStop',
+    'onToolCall',
+    'onToolSuccess',
+    'onToolError',
+    'onResourceRead',
+    'onResourceSuccess',
+    'onResourceError',
+    'onPromptGet',
+    'onPromptSuccess',
+    'onPromptError',
+  ];
+
+  for (const hookName of hookNames) {
+    const handlers = sources
+      .map((s) => s[hookName])
+      .filter((h): h is NonNullable<typeof h> => h !== undefined);
+
+    if (handlers.length > 0) {
+      // biome-ignore lint/suspicious/noExplicitAny: Generic hook merging requires any
+      (merged as any)[hookName] = async (...args: unknown[]) => {
+        for (const handler of handlers) {
+          // biome-ignore lint/suspicious/noExplicitAny: Generic hook invocation
+          await (handler as any)(...args);
+        }
+      };
+    }
+  }
+
+  // Merge awaitHooks - if any source says false, use false
+  merged.awaitHooks = sources.every((s) => s.awaitHooks !== false);
+
+  return merged as ServerHooks;
 }
 
 /**
@@ -185,6 +236,36 @@ export async function bootstrapServer(
   const hasResources = resources.length > 0 && options.capabilities?.resources !== false;
   const hasPrompts = prompts.length > 0 && options.capabilities?.prompts !== false;
 
+  // Initialize plugin registry if plugins are configured
+  let pluginRegistry: PluginRegistryImpl | undefined;
+  let pluginMiddleware: import('../middleware/types.js').MiddlewareInput[] = [];
+  let pluginHooks: Partial<ServerHooks>[] = [];
+
+  if (options.plugins && options.plugins.length > 0) {
+    pluginRegistry = createPluginRegistry(options.name, options.version);
+
+    // Register all plugins
+    for (const plugin of options.plugins) {
+      pluginRegistry.register(plugin);
+    }
+
+    // Initialize plugins (collects middleware and hooks)
+    await pluginRegistry.initializeAll();
+
+    // Collect plugin middleware and hooks
+    pluginMiddleware = pluginRegistry.getMiddlewares();
+    pluginHooks = pluginRegistry.getHooks();
+  }
+
+  // Merge server hooks with plugin hooks
+  const mergedHooks = mergeHooks(options.hooks, ...pluginHooks);
+
+  // Combine server middleware with plugin middleware
+  const combinedMiddleware = [
+    ...(options.middleware ?? []),
+    ...pluginMiddleware,
+  ];
+
   // Create MCP server instance
   const server = new McpServer(
     {
@@ -200,34 +281,45 @@ export async function bootstrapServer(
     },
   );
 
-  // Get hooks from options
-  const hooks = options.hooks;
-
   // Register tools
   if (hasTools) {
-    registerTools(server, instance, prototype, tools, hooks);
+    registerTools(server, instance, prototype, tools, mergedHooks);
   }
 
   // Register resources
   if (hasResources) {
-    registerResources(server, instance, resources, hooks);
+    registerResources(server, instance, resources, mergedHooks);
   }
 
   // Register prompts
   if (hasPrompts) {
-    registerPrompts(server, instance, prototype, prompts, hooks);
+    registerPrompts(server, instance, prototype, prompts, mergedHooks);
   }
 
-  // Create transport
-  const transport = createTransport(listenOptions);
+  // Create transport with combined middleware
+  const transport = createTransport(
+    listenOptions,
+    combinedMiddleware.length > 0 ? combinedMiddleware : undefined,
+  );
 
   return {
     server,
     transport,
+    pluginRegistry,
     connect: async () => {
       await server.connect(transport);
+
+      // Start all plugins after server is connected
+      if (pluginRegistry) {
+        await pluginRegistry.startAll(server);
+      }
     },
     close: async () => {
+      // Stop all plugins before closing server
+      if (pluginRegistry) {
+        await pluginRegistry.stopAll();
+      }
+
       await server.close();
     },
   };
@@ -579,7 +671,10 @@ function registerPrompts(
 /**
  * Create appropriate transport based on options
  */
-function createTransport(options: ListenOptions): Transport {
+function createTransport(
+  options: ListenOptions,
+  middleware?: import('../middleware/types.js').MiddlewareInput[],
+): Transport {
   const transportType = options.transport ?? 'stdio';
 
   switch (transportType) {
@@ -595,6 +690,7 @@ function createTransport(options: ListenOptions): Transport {
         enableJsonResponse: options.enableJsonResponse,
         onSessionInitialized: options.onSessionInitialized,
         onSessionClosed: options.onSessionClosed,
+        middleware,
       });
 
     case 'http':

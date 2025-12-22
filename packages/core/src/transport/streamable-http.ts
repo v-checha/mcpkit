@@ -4,6 +4,7 @@ import { createServer } from 'node:http';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 import type { Transport } from '@modelcontextprotocol/sdk/shared/transport.js';
 import type { JSONRPCMessage } from '@modelcontextprotocol/sdk/types.js';
+import { MiddlewarePipeline, type MiddlewareContext, type MiddlewareInput } from '../middleware/index.js';
 
 /**
  * Options for creating a Streamable HTTP transport
@@ -48,6 +49,12 @@ export interface StreamableHttpTransportOptions {
    * Callback when a session is closed
    */
   onSessionClosed?: (sessionId: string) => void;
+
+  /**
+   * Middleware to execute before handling MCP requests
+   * Middleware runs for all HTTP requests to the server
+   */
+  middleware?: MiddlewareInput[];
 }
 
 /**
@@ -75,6 +82,7 @@ export class StreamableHttpTransport implements Transport {
   private server: Server | null = null;
   private transports: Map<string, StreamableHTTPServerTransport> = new Map();
   private activeTransport: StreamableHTTPServerTransport | null = null;
+  private middlewarePipeline: MiddlewarePipeline;
 
   onclose?: () => void;
   onerror?: (error: Error) => void;
@@ -87,6 +95,24 @@ export class StreamableHttpTransport implements Transport {
       path: '/mcp',
       ...options,
     };
+
+    // Initialize middleware pipeline
+    this.middlewarePipeline = new MiddlewarePipeline();
+    if (options.middleware) {
+      this.middlewarePipeline.useAll(options.middleware);
+    }
+  }
+
+  /**
+   * Add middleware to the transport
+   * Can be called before start() to add additional middleware
+   *
+   * @param middleware - Middleware function or named middleware
+   * @returns this for chaining
+   */
+  use(middleware: MiddlewareInput): this {
+    this.middlewarePipeline.use(middleware);
+    return this;
   }
 
   /**
@@ -113,37 +139,63 @@ export class StreamableHttpTransport implements Transport {
    * Handle incoming HTTP requests
    */
   private async handleRequest(req: IncomingMessage, res: ServerResponse): Promise<void> {
-    const url = new URL(req.url ?? '/', `http://${req.headers.host}`);
-
-    // Only handle requests to the MCP path
-    if (url.pathname !== this.options.path) {
-      res.writeHead(404, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ error: 'Not found' }));
-      return;
-    }
-
-    // Add CORS headers for browser clients
+    // Add CORS headers for browser clients (before middleware for preflight)
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, mcp-session-id');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, mcp-session-id, Authorization, X-API-Key');
 
-    // Handle CORS preflight
+    // Handle CORS preflight (before middleware)
     if (req.method === 'OPTIONS') {
       res.writeHead(204);
       res.end();
       return;
     }
 
-    // Get or create transport for this session
+    // Parse body early so middleware can access it
+    const body = await this.parseBody(req);
     const sessionId = req.headers['mcp-session-id'] as string | undefined;
+
+    // Execute middleware pipeline, then handle MCP request
+    try {
+      await this.middlewarePipeline.execute(
+        req,
+        res,
+        sessionId,
+        body,
+        async (ctx: MiddlewareContext) => {
+          // Middleware completed - handle MCP request
+          await this.handleMcpRequest(ctx);
+        },
+      );
+    } catch (error) {
+      // Middleware threw an error
+      this.onerror?.(error instanceof Error ? error : new Error(String(error)));
+      if (!res.headersSent) {
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Internal server error' }));
+      }
+    }
+  }
+
+  /**
+   * Handle MCP-specific request after middleware
+   */
+  private async handleMcpRequest(ctx: MiddlewareContext): Promise<void> {
+    const { request: req, response: res, sessionId, body, path } = ctx;
+
+    // Only handle requests to the MCP path
+    if (path !== this.options.path) {
+      res.writeHead(404, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Not found' }));
+      return;
+    }
 
     const existingTransport = sessionId ? this.transports.get(sessionId) : undefined;
 
     if (existingTransport) {
       // Existing session
-      const body = await this.parseBody(req);
       await existingTransport.handleRequest(req, res, body);
-    } else if (req.method === 'POST') {
+    } else if (ctx.method === 'POST') {
       // New session - create transport
       const transport = new StreamableHTTPServerTransport({
         sessionIdGenerator: this.options.stateless ? undefined : () => randomUUID(),
@@ -176,7 +228,6 @@ export class StreamableHttpTransport implements Transport {
       };
 
       // Handle the request
-      const body = await this.parseBody(req);
       await transport.handleRequest(req, res, body);
 
       // Store for stateless mode

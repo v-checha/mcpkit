@@ -1,5 +1,7 @@
 import 'reflect-metadata';
 import type { ZodTypeAny } from 'zod';
+import type { MiddlewareInput } from '../middleware/types.js';
+import type { PluginInput } from '../plugins/types.js';
 import type { MonitorOptions, ServerHooks } from '../types/hooks.js';
 import { METADATA_KEYS } from './keys.js';
 
@@ -89,6 +91,10 @@ export interface ServerOptionsMetadata {
   };
   /** Server lifecycle and monitoring hooks */
   hooks?: ServerHooks;
+  /** Middleware for HTTP transports */
+  middleware?: MiddlewareInput[];
+  /** Plugins for extending functionality */
+  plugins?: PluginInput[];
 }
 
 /**

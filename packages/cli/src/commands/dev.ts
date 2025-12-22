@@ -2,14 +2,17 @@ import { type ChildProcess, spawn } from 'node:child_process';
 import path from 'node:path';
 import chalk from 'chalk';
 import fs from 'fs-extra';
+import { HotReloadManager } from '../utils/hot-reload.js';
 
 interface DevOptions {
   port: string;
   transport: string;
   watch: boolean;
+  clear: boolean;
 }
 
 let childProcess: ChildProcess | null = null;
+let hotReloadManager: HotReloadManager | null = null;
 
 /**
  * Start the MCP server in development mode
@@ -36,31 +39,73 @@ export async function devCommand(options: DevOptions): Promise<void> {
     process.exit(1);
   }
 
-  console.log(chalk.bold('\n🔧 Starting mcpkit development server...\n'));
-  console.log(chalk.gray(`Transport: ${options.transport}`));
-  if (options.transport !== 'stdio') {
-    console.log(chalk.gray(`Port: ${options.port}`));
-  }
-  console.log(chalk.gray(`Watch mode: ${options.watch ? 'enabled' : 'disabled'}`));
-  console.log('');
-
   // Set environment variables
-  const env = {
-    ...process.env,
+  const env: Record<string, string> = {
     MCPKIT_TRANSPORT: options.transport,
     MCPKIT_PORT: options.port,
     NODE_ENV: 'development',
   };
 
-  // Build and watch with tsup
-  const tsupArgs = options.watch ? ['--watch', '--onSuccess', 'node dist/index.js'] : [];
+  // Use enhanced hot reload if watch mode is enabled
+  if (options.watch) {
+    hotReloadManager = new HotReloadManager({
+      cwd,
+      entry: 'dist/index.js',
+      watchDirs: ['src'],
+      env,
+      buildCommand: 'npx',
+      buildArgs: ['tsup'],
+      clearConsole: options.clear,
+      debounce: 300,
+      onStart: () => {
+        if (options.transport !== 'stdio') {
+          console.log(chalk.gray(`  Transport: ${options.transport}`));
+          console.log(chalk.gray(`  Port: ${options.port}\n`));
+        }
+      },
+    });
+
+    await hotReloadManager.start();
+    return;
+  }
+
+  // Non-watch mode: build once and run
+  console.log(chalk.bold('\n🔧 Starting mcpkit development server...\n'));
+  console.log(chalk.gray(`Transport: ${options.transport}`));
+  if (options.transport !== 'stdio') {
+    console.log(chalk.gray(`Port: ${options.port}`));
+  }
+  console.log('');
 
   try {
-    childProcess = spawn('npx', ['tsup', ...tsupArgs], {
+    // Build first
+    console.log(chalk.yellow('Building...'));
+    await new Promise<void>((resolve, reject) => {
+      const build = spawn('npx', ['tsup'], {
+        cwd,
+        env: { ...process.env, ...env },
+        stdio: 'inherit',
+        shell: true,
+      });
+
+      build.on('close', (code) => {
+        if (code === 0) {
+          resolve();
+        } else {
+          reject(new Error(`Build failed with code ${code}`));
+        }
+      });
+
+      build.on('error', reject);
+    });
+
+    // Run server
+    console.log(chalk.green('\n✓ Build complete, starting server...\n'));
+
+    childProcess = spawn('node', ['dist/index.js'], {
       cwd,
-      env,
+      env: { ...process.env, ...env },
       stdio: 'inherit',
-      shell: true,
     });
 
     childProcess.on('error', (error) => {
@@ -75,7 +120,7 @@ export async function devCommand(options: DevOptions): Promise<void> {
       }
     });
 
-    // Handle a graceful shutdown
+    // Handle graceful shutdown
     const cleanup = () => {
       if (childProcess) {
         console.log(chalk.yellow('\nShutting down...'));

@@ -1,5 +1,7 @@
 import 'reflect-metadata';
 import { MetadataStorage, type ServerOptionsMetadata } from '../metadata/index.js';
+import type { MiddlewareInput } from '../middleware/index.js';
+import type { PluginInput } from '../plugins/index.js';
 import { type BootstrappedServer, bootstrapServer } from '../server/index.js';
 import type { ServerHooks } from '../types/hooks.js';
 import type { ListenOptions, MCPServerInstance } from '../types/index.js';
@@ -55,6 +57,53 @@ export interface MCPServerDecoratorOptions {
    * ```
    */
   hooks?: ServerHooks;
+
+  /**
+   * Middleware to run before handling HTTP requests
+   * Only applies to HTTP transports (streamable-http, sse)
+   *
+   * @example
+   * ```typescript
+   * import { apiKeyAuth, rateLimit } from '@mcpkit-dev/core';
+   *
+   * @MCPServer({
+   *   name: 'my-server',
+   *   version: '1.0.0',
+   *   middleware: [
+   *     apiKeyAuth({
+   *       header: 'x-api-key',
+   *       validate: (key) => key === process.env.API_KEY
+   *     }),
+   *     rateLimit({ maxRequests: 100, windowMs: 60000 })
+   *   ]
+   * })
+   * ```
+   */
+  middleware?: MiddlewareInput[];
+
+  /**
+   * Plugins to extend server functionality
+   *
+   * @example
+   * ```typescript
+   * import { createPlugin, definePlugin } from '@mcpkit-dev/core';
+   *
+   * const loggingPlugin = createPlugin({
+   *   name: 'logging',
+   *   version: '1.0.0',
+   *   hooks: {
+   *     onToolCall: ({ name }) => console.log(`Tool: ${name}`),
+   *   },
+   * });
+   *
+   * @MCPServer({
+   *   name: 'my-server',
+   *   version: '1.0.0',
+   *   plugins: [loggingPlugin],
+   * })
+   * ```
+   */
+  plugins?: PluginInput[];
 }
 
 /**
@@ -94,6 +143,8 @@ export function MCPServer(
       description: options.description,
       capabilities: options.capabilities,
       hooks: options.hooks,
+      middleware: options.middleware,
+      plugins: options.plugins,
     };
     MetadataStorage.setServerOptions(target, serverOptions);
 
