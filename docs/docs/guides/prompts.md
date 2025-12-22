@@ -16,7 +16,7 @@ import { createServer, MCPServer, Prompt, Param } from '@mcpkit-dev/core';
 class WritingServer {
   @Prompt({ description: 'Generate a blog post outline' })
   async blogOutline(
-    @Param({ description: 'Topic for the blog post' }) topic: string
+    @Param({ name: 'topic', description: 'Topic for the blog post' }) topic: string
   ) {
     return {
       messages: [{

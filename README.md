@@ -29,7 +29,7 @@ npm install @mcpkit-dev/core reflect-metadata zod
 
 ```typescript
 import 'reflect-metadata';
-import { MCPServer, Tool, Param } from '@mcpkit-dev/core';
+import { createServer, MCPServer, Tool, Param } from '@mcpkit-dev/core';
 
 @MCPServer({
   name: 'my-server',
@@ -37,12 +37,12 @@ import { MCPServer, Tool, Param } from '@mcpkit-dev/core';
 })
 class MyServer {
   @Tool({ description: 'Greet someone' })
-  greet(@Param({ description: 'Name to greet' }) name: string) {
+  greet(@Param({ name: 'name', description: 'Name to greet' }) name: string) {
     return `Hello, ${name}!`;
   }
 }
 
-const server = new MyServer();
+const server = createServer(MyServer);
 await server.listen();
 ```
 

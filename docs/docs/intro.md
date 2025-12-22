@@ -38,7 +38,7 @@ import { createServer, MCPServer, Tool, Param } from '@mcpkit-dev/core';
 class MyServer {
   @Tool({ description: 'Greet someone by name' })
   async greet(
-    @Param({ description: 'Name to greet' }) name: string
+    @Param({ name: 'name', description: 'Name to greet' }) name: string
   ): Promise<string> {
     return `Hello, ${name}!`;
   }

@@ -23,8 +23,8 @@ class WeatherServer {
   // Define a tool
   @Tool({ description: 'Get current weather for a city' })
   async getWeather(
-    @Param({ description: 'City name' }) city: string,
-    @Param({ description: 'Temperature unit', optional: true })
+    @Param({ name: 'city', description: 'City name' }) city: string,
+    @Param({ name: 'unit', description: 'Temperature unit', optional: true })
     unit: 'celsius' | 'fahrenheit' = 'celsius'
   ): Promise<string> {
     // In a real app, you'd call a weather API

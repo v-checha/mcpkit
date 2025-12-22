@@ -18,8 +18,8 @@ import { createServer, MCPServer, Tool, Param } from '@mcpkit-dev/core';
 class MyServer {
   @Tool({ description: 'Add two numbers together' })
   async add(
-    @Param({ description: 'First number' }) a: number,
-    @Param({ description: 'Second number' }) b: number
+    @Param({ name: 'a', description: 'First number' }) a: number,
+    @Param({ name: 'b', description: 'Second number' }) b: number
   ): Promise<number> {
     return a + b;
   }
