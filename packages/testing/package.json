@@ -46,6 +46,7 @@
     "model-context-protocol"
   ],
   "license": "MIT",
+  "homepage": "https://v-checha.github.io/mcpkit",
   "repository": {
     "type": "git",
     "url": "https://github.com/v-checha/mcpkit.git",
