@@ -20,6 +20,7 @@ const sidebars: SidebarsConfig = {
         'guides/resources',
         'guides/prompts',
         'guides/hooks',
+        'guides/configuration',
         'guides/testing',
         'guides/debugging',
         'guides/tracing-decorator',
