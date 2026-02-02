@@ -28,7 +28,7 @@
     "@modelcontextprotocol/sdk": "^1.12.1"
   },
   "peerDependencies": {
-    "@mcpkit-dev/core": ">=0.1.0"
+    "@mcpkit-dev/core": ">2.0.0"
   },
   "devDependencies": {
     "@types/node": "^22.10.2",

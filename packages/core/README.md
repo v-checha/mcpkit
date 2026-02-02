@@ -35,6 +35,7 @@ await server.listen();
 ## Features
 
 - **Decorators** - `@MCPServer`, `@Tool`, `@Resource`, `@Prompt`, `@Param`
+- **Raw tool results** - `@Tool({ rawResult: true })` to return MCP `CallToolResult` directly
 - **Authentication** - API key, JWT, Bearer token middleware
 - **Observability** - `@Debug`, `@Monitor`, `@Traced` decorators
 - **Plugins** - Extensible plugin system with lifecycle hooks

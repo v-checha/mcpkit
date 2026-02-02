@@ -57,6 +57,13 @@ export interface ToolDecoratorOptions {
    * MCP tool annotations for additional metadata
    */
   annotations?: ToolAnnotations;
+
+  /**
+   * When true, the method must return a RawToolResult object directly.
+   * The framework will skip automatic result wrapping and pass the return value as-is.
+   * @default false
+   */
+  rawResult?: boolean;
 }
 
 /**
@@ -101,6 +108,7 @@ export function Tool(options: ToolDecoratorOptions = {}): MethodDecorator {
       description: options.description,
       schema: options.schema,
       annotations: options.annotations,
+      rawResult: options.rawResult,
     };
 
     MetadataStorage.addToolMetadata(target, metadata);

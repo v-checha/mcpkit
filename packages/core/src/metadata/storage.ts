@@ -25,6 +25,11 @@ export interface ToolMetadata {
     idempotentHint?: boolean;
     openWorldHint?: boolean;
   };
+  /**
+   * When true, the method's return value is used as-is (RawToolResult)
+   * instead of being wrapped by formatResult()
+   */
+  rawResult?: boolean;
 }
 
 /**

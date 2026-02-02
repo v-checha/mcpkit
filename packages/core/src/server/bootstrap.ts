@@ -413,6 +413,9 @@ function registerTools(
           // Apply @Monitor logging for success
           applyMonitorLogging(monitorOpts, 'success', { name: toolName, result, duration });
 
+          if (toolMeta.rawResult) {
+            return result as ReturnType<typeof formatResult>;
+          }
           return formatResult(result);
         } catch (error) {
           const duration = Date.now() - startTime;

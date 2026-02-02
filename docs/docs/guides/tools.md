@@ -51,6 +51,9 @@ await server.listen();
     requiresConfirmation: false, // Should the AI ask before executing?
     cacheable: true,         // Can results be cached?
   },
+
+  // Optional: Return raw MCP CallToolResult (skip auto-wrapping)
+  rawResult: false,
 })
 async fetchUser(args: { userId: string; includeProfile?: boolean }) {
   // implementation
@@ -175,6 +178,38 @@ async processImage(
     ],
   };
 }
+```
+
+### Raw Tool Result
+
+Use `rawResult: true` to bypass the framework's automatic result wrapping and return a raw MCP `CallToolResult` object directly. This is useful when you need to return `structuredContent`, mixed content types, or any response shape the framework doesn't auto-format:
+
+```typescript
+import type { RawToolResult } from '@mcpkit-dev/core';
+
+@Tool({ description: 'Get weather data', rawResult: true })
+async getWeather(
+  @Param({ name: 'city' }) city: string
+): Promise<RawToolResult> {
+  const data = await fetchWeather(city);
+
+  return {
+    content: [
+      { type: 'text', text: `Weather in ${city}: ${data.summary}` },
+    ],
+    structuredContent: {
+      temperature: data.temperature,
+      humidity: data.humidity,
+      unit: 'celsius',
+    },
+  };
+}
+```
+
+When `rawResult` is enabled:
+- The method's return value is passed through to the MCP client as-is
+- No automatic wrapping into `{ content: [{ type: 'text', text: ... }] }`
+- Exceptions are still caught and formatted as error responses
 ```
 
 ## Error Handling

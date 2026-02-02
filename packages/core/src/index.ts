@@ -353,6 +353,7 @@ export type {
   PromptResult,
   PromptRole,
   PromptSuccessContext,
+  RawToolResult,
   ResourceContent,
   ResourceContentItem,
   ResourceErrorContext,

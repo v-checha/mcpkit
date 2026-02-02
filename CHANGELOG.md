@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- **`rawResult` option for `@Tool` decorator** - Set `@Tool({ rawResult: true })` to return a raw MCP `CallToolResult` object directly, bypassing automatic result wrapping. Useful for returning `structuredContent`, mixed content types, or custom response shapes.
+- `RawToolResult` type exported from `@mcpkit-dev/core`
+
 ## [1.4.0] - 2025-12-10
 
 ### Added

@@ -119,6 +119,7 @@ Exposes a method as an MCP tool.
   name?: string;
   schema?: ZodSchema;
   annotations?: ToolAnnotations;
+  rawResult?: boolean; // default: false
 })
 ```
 

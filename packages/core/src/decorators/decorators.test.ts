@@ -53,6 +53,32 @@ describe('Decorators', () => {
       expect(tools[0].schema).toBe(schema);
     });
 
+    it('should store rawResult flag when provided', () => {
+      class TestServer {
+        @Tool({ description: 'Raw result tool', rawResult: true })
+        async rawMethod() {
+          return { content: [{ type: 'text' as const, text: 'raw' }] };
+        }
+      }
+
+      const tools = MetadataStorage.getToolsMetadata(TestServer.prototype);
+
+      expect(tools[0].rawResult).toBe(true);
+    });
+
+    it('should default rawResult to undefined when not provided', () => {
+      class TestServer {
+        @Tool({ description: 'Normal tool' })
+        async normalMethod() {
+          return 'result';
+        }
+      }
+
+      const tools = MetadataStorage.getToolsMetadata(TestServer.prototype);
+
+      expect(tools[0].rawResult).toBeUndefined();
+    });
+
     it('should throw when applied to non-method', () => {
       expect(() => {
         // biome-ignore lint/correctness/noUnusedVariables: Class is intentionally unused - testing decorator throws

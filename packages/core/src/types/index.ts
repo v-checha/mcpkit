@@ -122,6 +122,16 @@ export interface ToolResult {
 }
 
 /**
+ * Raw tool result matching the MCP SDK CallToolResult shape.
+ * Used with `@Tool({ rawResult: true })` to bypass automatic result wrapping.
+ */
+export interface RawToolResult {
+  content?: ToolResultContent[];
+  structuredContent?: Record<string, unknown>;
+  isError?: boolean;
+}
+
+/**
  * Resource content format
  */
 export interface ResourceContentItem {

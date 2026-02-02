@@ -9,6 +9,7 @@ A modern, decorator-based framework for building Model Context Protocol (MCP) se
 
 - **Decorator-based API** - Clean, declarative syntax inspired by NestJS
 - **Type-safe** - Full TypeScript support with automatic type inference
+- **Raw results** - `@Tool({ rawResult: true })` for full control over MCP responses
 - **Production-ready** - Built-in auth, rate limiting, metrics, tracing, and health checks
 - **Extensible** - Plugin system for reusable functionality
 - **Multiple transports** - stdio, HTTP/SSE, and Streamable HTTP support
