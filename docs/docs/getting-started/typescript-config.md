@@ -107,7 +107,7 @@ my-server/
     "dev": "tsx watch src/index.ts"
   },
   "dependencies": {
-    "@mcpkit-dev/core": "^2.0.0",
+    "@mcpkit-dev/core": "^2.4.1",
     "reflect-metadata": "^0.2.0",
     "zod": "^3.0.0"
   },

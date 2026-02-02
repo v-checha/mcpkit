@@ -170,7 +170,7 @@ async function createProjectFiles(
       author: config.author,
       license: 'MIT',
       dependencies: {
-        '@mcpkit-dev/core': '^2.0.0',
+        '@mcpkit-dev/core': '^2.4.1',
         'reflect-metadata': '^0.2.2',
       },
       devDependencies: {
